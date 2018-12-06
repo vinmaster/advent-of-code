@@ -1,0 +1,11 @@
+[package]
+name = "advent_of_code"
+version = "1.0.0"
+
+[[bin]]
+name = "main"
+path = "main.rs"
+
+[lib]
+name = "year2018day1"
+path = "2018/day1/day1.rs"
