@@ -35,7 +35,11 @@ const run = async (command) => {
       year = (new Date()).getFullYear();
     }
     console.log(`Running year ${year} and day ${day}`);
+    const hrStartTime = process.hrtime();
     const output = await run(`node ./${year}/day${day}/day${day}.js`);
+    const hrEndTime = process.hrtime(hrStartTime);
+    const MS_PER_NS = 1000000;
+    console.log('Finished in:', `${hrEndTime[0]}.${Math.round(hrEndTime[1] / MS_PER_NS)} s`);
     console.log(output.trim());
   }
 })();

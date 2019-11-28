@@ -1,3 +1,6 @@
-target
+# JavaScript
 npm-debug.log*
 node_modules
+
+# Rust
+target

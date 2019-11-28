@@ -1,5 +1,5 @@
 # Advent of Code
-Solutions to Advent of Code website
+> Solutions to Advent of Code website
 
 ## Commands
 
@@ -16,12 +16,6 @@ node main.js 2018 1
 node main.js 1
 ```
 
-### Rust
-```bash
-# Run one day solutions
-cargo run 2018 1
-```
-
 ### Ruby
 ```bash
 # Run one year solutions
@@ -34,6 +28,27 @@ ruby main.rb 2018 1
 # ruby main.rb DAY
 ruby main.rb 1
 ```
+
+### Rust
+```bash
+# Run one day solutions
+cargo run 2018 1
+```
+
+## Files
+> Files for each language. The rest are inside `.gitignore`
+
+### JavaScript
+- package.json
+- [main.js](./main.js)
+
+### Ruby
+- [main.rb](./main.rb)
+
+### Rust
+- Cargo.toml
+- Cargo.lock
+- [main.rs](./main.rs)
 
 ## Website
 - https://adventofcode.com
