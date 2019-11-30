@@ -3,6 +3,12 @@
 
 ## Commands
 
+```bash
+# Download input (Requires config.json with SESSION_ID in it)
+# node setup.js YEAR DAY
+node setup.js 2018 1
+```
+
 ### JavaScript
 ```bash
 # Run one year solutions

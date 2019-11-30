@@ -1,3 +1,6 @@
+# Used for setup.js
+config.json
+
 # JavaScript
 npm-debug.log*
 node_modules
