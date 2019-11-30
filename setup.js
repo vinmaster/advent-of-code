@@ -19,6 +19,11 @@ const TIMEOUT = 10000;
 
   if (!year || !day) { throw new Error('No year and day'); }
 
+  const yearDirectory = `./${year}`;
+  if (!fs.existsSync(yearDirectory)) {
+    fs.mkdirSync(yearDirectory);
+  }
+
   const directory = `./${year}/day${day}`;
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
