@@ -35,12 +35,6 @@ ruby main.rb 2018 1
 ruby main.rb 1
 ```
 
-### Rust
-```bash
-# Run one day solutions
-cargo run 2018 1
-```
-
 ## Files
 > Files for each language. The rest are inside `.gitignore`
 
@@ -50,11 +44,6 @@ cargo run 2018 1
 
 ### Ruby
 - [main.rb](./main.rb)
-
-### Rust
-- Cargo.toml
-- Cargo.lock
-- [main.rs](./main.rs)
 
 ## Website
 - https://adventofcode.com
