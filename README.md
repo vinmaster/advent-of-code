@@ -22,6 +22,18 @@ node main.js 2018 1
 node main.js 1
 ```
 
+### Haskell
+```bash
+# Compile
+stack ghc 2019/day1/day1.hs
+# Run compiled
+2019/day1/day1.exe
+# Run without compiling
+stack runghc -- main.hs 2019 1
+# Run file directly
+stack runghc -- 2019\day1\day1.hs
+```
+
 ### Ruby
 ```bash
 # Run one year solutions

@@ -34,7 +34,7 @@ const run = async (command) => {
       day = year;
       year = (new Date()).getFullYear();
     }
-    console.log(`Running year ${year} and day ${day}`);
+    console.log(`Running year ${year} day ${day}`);
     const hrStartTime = process.hrtime();
     const output = await run(`node ./${year}/day${day}/day${day}.js`);
     const hrEndTime = process.hrtime(hrStartTime);

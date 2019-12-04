@@ -4,3 +4,8 @@ config.json
 # JavaScript
 npm-debug.log*
 node_modules
+
+# Haskell
+*.exe
+*.hi
+*.o
