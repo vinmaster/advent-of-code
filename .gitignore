@@ -9,3 +9,6 @@ node_modules
 *.exe
 *.hi
 *.o
+
+# Clojure
+.calva
