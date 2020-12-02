@@ -4,7 +4,7 @@
   (.format (new java.text.SimpleDateFormat "yyyy") (java.util.Date.)))
 
 (defn run [year day]
-  (load-file (format "%s/day%s/day%s.clj" year day day))
+  (time (load-file (format "%s/day%s/day%s.clj" year day day)))
   ;; (when (resolve (symbol "part1")) (@(resolve (symbol "part1"))))
   ;; (when (resolve (symbol "part2")) (@(resolve (symbol "part2"))))
   )

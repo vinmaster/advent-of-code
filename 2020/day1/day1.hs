@@ -15,6 +15,28 @@ main = do
   putStrLn $ "day1 part2: " ++ show (part2 input)
 
 {-
+findProduct n = product . head . filter ((== 2020) . sum) . replicateM n
+-- findProduct n = product . head . filter ((== 2020) . sum) . map (take n) . permutations
+
+--------------------------------------------------------------------------------
+
+import Data.List
+import Data.Maybe
+
+main = interact findSolution
+
+findSolution = show . product . findJust isSolutionPair . pairs . parseInput
+
+parseInput = map read . lines
+
+pairs = sequence . replicate 2
+
+isSolutionPair = (2020 ==) . sum
+
+findJust f = fromJust . find f
+
+--------------------------------------------------------------------------------
+
 import Control.Applicative
 
 main :: IO ()
