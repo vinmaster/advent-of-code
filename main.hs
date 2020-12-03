@@ -8,4 +8,4 @@ main = do
   if length args < 2 then error "Must supply year and day" else pure ()
   let [year, day] = args
   putStrLn $ printf "Running year %s day %s" year day
-  callCommand $ printf "stack runghc -- %s\\day%s\\day%s.hs" year day day
+  callCommand $ printf "stack runghc -- %s/day%s/day%s.hs" year day day
