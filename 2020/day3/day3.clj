@@ -28,3 +28,48 @@
 
 (part1 input)
 (part2 input)
+
+;; (ns advent-of-code.2020.day3
+;;   (:require [clojure.string :as s])
+;;   (:gen-class))
+
+;; (def grid (s/split-lines (slurp "resources/2020/day3.in")))
+
+;; (defn is-tree?  [x y]
+;;   (let [l (count (first grid))
+;;         c (get (get grid x) (mod y l))]
+;;     (if (= c \#) 1 0)))
+
+;; (defn traverse
+;;   ([dx dy] (traverse 0 0 dx dy 0))
+;;   ([x y dx dy trees]
+;;    (if (>= x (count grid))
+;;      trees
+;;      (traverse (+ x dx) (+ y dy) dx dy (+ trees (is-tree? x y))))))
+
+;; (defn solution []
+;;   (let [slopes [[1 1] [1 3] [1 5] [1 7] [2 1]]]
+;;     (println (traverse 1 3)) ;; part 1
+;;     (println (reduce #(* %1 (apply traverse %2)) 1 slopes)))) ;; part 2
+
+;; --------------------------------------------------------------------------------
+
+;; (def input (->> (slurp (io/resource "2020/3/input"))
+;;                 str/split-lines))
+
+;; (defn toboggan [input [dy dx]]
+;;   (->> (for [i (range 0 (count input) dx)
+;;              :let [line (get input i)
+;;                    j (/ (* i dy) dx)]]
+;;          (nth (cycle line) j))
+;;        (filter #(= \# %))
+;;        count))
+
+;; (def movement [[1 1] [3 1] [5 1] [7 1] [1 2]])
+
+;; (defn solution-1 [input]
+;;   (toboggan input [3 1]))
+
+;; (defn solution-2 [input]
+;;   (apply * (for [move movement]
+;;              (toboggan input move))))
