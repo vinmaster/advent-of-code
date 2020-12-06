@@ -62,13 +62,15 @@ function download(url, path) {
         .on('end', function () {
           file.end();
           console.log(`${uri.path} downloaded to: ${path}`);
-          resolve();
+          file.on('finish', () => { resolve() });
         })
         .on('error', function (err) {
+          fs.unlink(path)
           reject(err);
         })
     })
     request.setTimeout(TIMEOUT, function () {
+      fs.unlink(path)
       request.abort();
       reject(new Error(`request timeout after ${TIMEOUT / 1000.0}s`));
     })
