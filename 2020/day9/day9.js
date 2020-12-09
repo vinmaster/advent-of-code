@@ -1,5 +1,12 @@
 const fs = require('fs');
 const path = require('path');
+const util = require('util');
+
+// util.inspect.defaultOptions.maxArrayLength = null;
+util.inspect.defaultOptions.showHidden = true;
+util.inspect.defaultOptions.depth = null;
+util.inspect.defaultOptions.compact = true;
+const log = (...args) => console.log(...args);
 
 function findInvalidNum(nums, preamble) {
   let list = [];
@@ -75,5 +82,5 @@ function part2(input) {
 
 let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8');
 
-console.log('day9 part1:', part1(input));
-console.log('day9 part2:', part2(input));
+log('day9 part1:', part1(input));
+log('day9 part2:', part2(input));
