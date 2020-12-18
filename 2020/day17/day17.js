@@ -20,6 +20,17 @@ const setCoord4 = (coords, x, y, z, w, value) => coords[toCoord4(x, y, z, w)] = 
 const ACTIVE = '#';
 const INACTIVE = '.';
 
+// /** @typedef {{ ACTIVE: string, INACTIVE: string }} TYPES */
+/**
+ * @typedef TYPES
+ * @property {string} ACTIVE
+ * @property {string} INACTIVE
+ */
+const TYPES = {
+  ACTIVE,
+  INACTIVE,
+}
+
 const DV = [
   // z = 0
   [-1, -1, 0], [0, -1, 0], [1, -1, 0], [-1, 0, 0],
@@ -56,6 +67,15 @@ function getNeighbors(coords, x, y, z) {
   })
 }
 
+/**
+ * Get neighbors in 4 dimensional space
+ * @param {Object<string, string>} coords - Object containing coords
+ * @param {number} x - x dimension
+ * @param {number} y - y dimension
+ * @param {number} z - z dimension
+ * @param {number} w - w dimension
+ * @returns {string[]} List of strings
+ */
 function getNeighbors4(coords, x, y, z, w) {
   return DV4.map(([dx, dy, dz, dw]) => {
     return coords[toCoord4(
@@ -200,6 +220,7 @@ function part2(input) {
     .trim()
     .split('\n');
 
+  /** @type {Object<4D, string>} */
   let coords = [];
   for (let y = 0; y < lines.length; y++) {
     let line = lines[y];
