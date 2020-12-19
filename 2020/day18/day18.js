@@ -124,3 +124,109 @@ https://en.wikipedia.org/wiki/Operator-precedence_parser#Alternative_methods
 //         + '))')
 //     .map(l => eval(l))
 //     .reduce((p, c) => p + c, 0));
+
+/*
+const input = require('./data');
+
+const PARENS_RE = /\(([^()]+)\)/;
+const ORDERED_RE = /(\d+) (\*|\+) (\d+)/;
+const ADD_RE = /(\d+) \+ (\d+)/;
+const MULT_RE = /(\d+) \* (\d+)/;
+
+const transformer = (re, replacer) => str => {
+  let match = null;
+  while ((match = str.match(re)) !== null) {
+    str = str.replace(match[0], replacer(match))
+  }
+  return str;
+};
+
+const pipe = (str, ...args) => args.reduce((acc, curr) => curr(acc), str)
+
+const evaluate = (expr, advanced = false) => parseInt(
+  advanced
+    ? pipe(
+      expr,
+      transformer(PARENS_RE, ([_, str]) => evaluate(str, advanced)),
+      transformer(ADD_RE, ([_, a, b]) => parseInt(a) + parseInt(b)),
+      transformer(MULT_RE, ([_, a, b]) => parseInt(a) * parseInt(b))
+    ) : pipe(
+      expr,
+      transformer(PARENS_RE, ([_, str]) => evaluate(str, advanced)),
+      transformer(ORDERED_RE, ([match]) => eval(match))
+    )
+)
+
+console.log(
+  input.reduce((acc, curr) => ({
+    part1: (acc.part1 || 0) + evaluate(curr),
+    part2: (acc.part2 || 0) + evaluate(curr, true)
+  }), {})
+);
+
+--------------------------------------------------------------------------------
+
+const fs = require('fs');
+const expressions = fs.readFileSync('./input.txt', 'utf-8').split('\n');
+
+function calc (expression) {
+  // if it's just a number, do nothing
+  if (!isNaN(Number(expression))) { Number(expression) }
+  // if there's brackets, do that first
+  while (expression.match(/\(/)){
+    expression = expression.replace(/\([^()]+\)/, match =>
+      calc (match.slice(1, match.length-1))
+    )
+  }
+  // do all the calculations until it's just a number
+  while (isNaN(Number(expression))) {
+    expression = expression.replace(/(\d+) ([+*]) (\d+)/, (match, a, op, b) =>
+      op == '+' ? parseInt(a) + parseInt(b) : parseInt(a) * parseInt(b)
+    )
+  }
+  return Number(expression)
+}
+
+let runningTotal = 0
+for (expression of expressions) {
+  runningTotal += calc (expression)
+}
+console.log(runningTotal)
+
+
+
+--------------------------------------------------------------------------------
+*/
+
+// const fs = require('fs');
+// const expressions = fs.readFileSync('./input.txt', 'utf-8').split('\n');
+
+// function calc (expression) {
+//   // if it's just a number, do nothing
+//   if (!isNaN(Number(expression))) { Number(expression) }
+//   // if there's brackets, do that first
+//   while (expression.match(/\(/)){
+//     expression = expression.replace(/\([^()]+\)/, match => 
+//       calc (match.slice(1, match.length-1))
+//     )
+//   }
+//   // if there's addition, do that
+//   while (expression.match(/\+/)){
+//     expression = expression.replace(/(\d+) \+ (\d+)/, (match, a, b) => 
+//       parseInt(a) + parseInt(b)
+//     )
+//   }
+//   // if there's multiplication, do that
+//   while (expression.match(/\*/)) {
+//     expression = expression.replace(/(\d+) \* (\d+)/, (match, a, b) => 
+//       parseInt(a) * parseInt(b)
+//     )
+//   }
+//   return Number(expression)
+// }
+
+// let runningTotal = 0
+// for (expression of expressions) {
+//   runningTotal += calc (expression)
+// }
+// console.log(runningTotal)
