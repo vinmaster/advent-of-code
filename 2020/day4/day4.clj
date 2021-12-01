@@ -18,6 +18,7 @@
 (def passports (parsePassports input))
 
 ;; (defn includes? [list val] (some? (some (partial = val) list)))
+;; (defn includes? [list val] (some #(= val %1) list))
 (defn includes? [list val] (contains? (set list) val))
 
 ;; Use (Integer. val) to make sure value is int
