@@ -46,7 +46,8 @@ stack runghc -- main.hs 2019 1
 stack runghc -- 2019/day1/day1.hs
 ```
 
-## Clojure (Requires inlein)
+## Clojure
+(Requires inlein)
 ```bash
 # Run one day solutions
 # inlein main.clj YEAR DAY
@@ -54,6 +55,11 @@ inlein main.clj 2019 1
 # Run one day solutions for current year
 # inlein main.clj DAY
 inlein main.clj 1
+```
+
+(Requires Babashka)
+```bash
+bb mainbb.clj 2021 1
 ```
 
 ## Ruby
