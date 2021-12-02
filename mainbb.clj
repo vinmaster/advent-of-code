@@ -16,7 +16,7 @@
         (format "%d/day%d/day%d.clj" year day day))
     (throw (Exception. "Args must be year and day"))))
 
-;; (prn (get-command *command-line-args*))
+;; (prn (get-program-path *command-line-args*))
 
 (-> (shell/sh "bb" (get-program-path *command-line-args*))
     :out
