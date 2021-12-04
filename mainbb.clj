@@ -19,5 +19,5 @@
 ;; (prn (get-program-path *command-line-args*))
 
 (-> (shell/sh "bb" (get-program-path *command-line-args*))
-    :out
-    print)
+    (#(do (print (:out %))
+          (when (not= (:exit %) 0) (print (:err %))))))
