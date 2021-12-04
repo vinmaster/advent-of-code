@@ -8,8 +8,17 @@ const execPromise = util.promisify(exec);
 // }
 
 const run = async (command) => {
-  const { stdout, stderr } = await execPromise(command)
-  return stdout;
+  try {
+    const { stdout, stderr } = await execPromise(command)
+    return stdout;
+  } catch (error) {
+    console.log(error.stdout);
+    console.log('--- Error --------');
+    console.log(error.stderr);
+    console.log('------------------');
+    // console.error(error);
+    return null;
+  }
 }
 
 (async () => {
@@ -26,7 +35,7 @@ const run = async (command) => {
       if (!fs.existsSync(`./${year}/${day}/${day}.js`)) continue;
 
       const output = await run(`node ./${year}/${day}/${day}.js`);
-      console.log(output.trim());
+      if (output !== null) console.log(output.trim());
     }
   } else {
     if (process.argv.length === 3) {
@@ -40,6 +49,6 @@ const run = async (command) => {
     const hrEndTime = process.hrtime(hrStartTime);
     const MS_PER_NS = 1000000;
     console.log('Finished in:', `${hrEndTime[0]}.${Math.round(hrEndTime[1] / MS_PER_NS)} s`);
-    console.log(output.trim());
+    if (output !== null) console.log(output.trim());
   }
 })();
