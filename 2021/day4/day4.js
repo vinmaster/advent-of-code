@@ -59,10 +59,30 @@ function isBingo(board) {
   for (let row of board) {
     if (row.every(hasX)) return true;
   }
-  for (let col of transpose(board)) {
-    if (col.every(hasX)) return true;
+  // for (let col of transpose(board)) {
+  //   if (col.every(hasX)) return true;
+  // }
+  for (let i = 0; i < board[0].length; i++) {
+    if (board.every(row => hasX(row[i]))) return true;
   }
   return false;
+}
+
+/** 
+ * @param {number[][]} board 
+ * @returns {number}
+*/
+function getSum(board) {
+  let sum = 0;
+  for (let row of board) {
+    sum = row.reduce((acc, cur) => {
+      if (!cur.toString().includes('x')) {
+        return acc + cur;
+      }
+      return acc;
+    }, sum)
+  }
+  return sum;
 }
 
 const part1 = input => {
@@ -73,15 +93,7 @@ const part1 = input => {
     for (let board of boards) {
       markBoard(board, num);
       if (isBingo(board)) {
-        let sum = 0;
-        for (let row of board) {
-          sum = row.reduce((acc, cur) => {
-            if (!cur.toString().includes('x')) {
-              return acc + cur;
-            }
-            return acc;
-          }, sum)
-        }
+        let sum = getSum(board);
         return sum * num;
       }
     }
@@ -110,15 +122,7 @@ const part2 = input => {
     if (done) break;
   }
 
-  let sum = 0;
-  for (let row of boards[wonBoards[0]]) {
-    sum = row.reduce((acc, cur) => {
-      if (!cur.toString().includes('x')) {
-        return acc + cur;
-      }
-      return acc;
-    }, sum)
-  }
+  let sum = getSum(boards[wonBoards[0]]);
   return sum * lastNum;
 };
 
