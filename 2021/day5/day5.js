@@ -48,6 +48,16 @@ function getLinePointsWithDiagonal(x1, y1, x2, y2) {
   return points;
 }
 
+function getLinePointsWithDiagonal2(x1, y1, x2, y2) {
+  let points = [];
+  const dx = Math.sign(x2 - x1);
+  const dy = Math.sign(y2 - y1);
+  for (let x = x1, y = y1; x != x2 + dx || y != y2 + dy; x += dx, y += dy) {
+    points.push([x, y])
+  }
+  return points;
+}
+
 function markBoard(board, coord) {
   if (!board[coord]) board[coord] = 0;
   board[coord]++;
@@ -96,7 +106,7 @@ const part2 = input => {
   let board = {};
   for (let line of lines) {
     let [, x1, y1, x2, y2] = line.match(ENTRY_REGEX).map(s => parseInt(s, 10));
-    let coords = getLinePointsWithDiagonal(x1, y1, x2, y2).map(toCoord);
+    let coords = getLinePointsWithDiagonal2(x1, y1, x2, y2).map(toCoord);
     for (let c of coords) markBoard(board, c)
   }
   // printBoard(board);
@@ -118,3 +128,32 @@ let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8');
 
 console.log('day5 part1:', part1(input));
 console.log('day5 part2:', part2(input));
+
+/*
+
+import {readLines} from "https://deno.land/std/io/mod.ts";
+
+function isPart1() {
+    return Deno.args.length == 0 || Deno.args[0] == "1";
+}
+
+const grid = new Map();
+
+for await (const l of readLines(Deno.stdin)) {
+    const points = l.split(" -> ")
+    const [x1, y1] = points[0].split(",").map(x => parseInt(x, 10));
+    const [x2, y2] = points[1].split(",").map(x => parseInt(x, 10));
+
+    if (x1 == x2 || y1 == y2 || !isPart1()) {
+        const dx = Math.sign(x2 - x1);
+        const dy = Math.sign(y2 - y1);
+        for (let x = x1, y = y1; x != x2 + dx || y != y2 + dy; x += dx, y += dy) {
+            const key = `${x},${y}`;
+            grid.set(key, (grid.get(key) ?? 0) + 1);
+        }
+    }
+}
+
+console.log(Array.from(grid.values()).filter(x => x >= 2).length)
+
+*/
