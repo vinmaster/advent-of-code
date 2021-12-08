@@ -21,6 +21,11 @@
 node setup.js 2018 1
 ```
 
+## My workflow
+```bash
+chokidar -p true --polling-interval 1000 "20*/**/*" -c "node main.js 2019 11 | tee output.txt"
+```
+
 ## JavaScript
 ```bash
 # Run one year solutions
@@ -85,8 +90,6 @@ https://kufii.github.io/advent-of-code-2020/#/18
   - https://github.com/tschady/advent-of-code
   - https://github.com/transducer/adventofcode
   - https://www.youtube.com/channel/UC9m7D4XKPJqTPCLSBym3BCg/videos
-  - https://www.youtube.com/user/mzamansky/videos
-  - https://www.youtube.com/c/LambdaIsland/videos
 {
   "key": "ctrl+enter",
   "command": "clojureVSCode.evalAndShowResult",
@@ -95,12 +98,4 @@ https://kufii.github.io/advent-of-code-2020/#/18
 
 - JS/TypeScript
   - https://github.com/RikKierkels/advent-of-code-2020
-  - https://github.com/MauricioLudwig/advent-of-code
-  - https://github.com/tristanbeedell/Advent-of-Code
-  - https://github.com/AlexAegis/advent-of-code
-  - https://github.com/adhokshaja/AdventOfCode2020
-  - https://github.com/sguest/advent-of-code
-  - https://github.com/smrq/advent-of-code
   - https://github.com/tpatel/advent-of-code-2020 with youtube
-
-chokidar -p true --polling-interval 1000 "20*/**/*" -c "node main.js 2019 11 | tee output.txt"
