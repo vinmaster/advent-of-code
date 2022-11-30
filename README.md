@@ -64,7 +64,10 @@ inlein main.clj 1
 
 (Requires Babashka)
 ```bash
+# Run one day solutions
 bb mainbb.clj 2021 1
+# Run one day solutions for current year
+bb mainbb.clj 1
 ```
 
 ## Ruby
@@ -78,6 +81,15 @@ ruby main.rb 2018 1
 # Run one day solutions using current year
 # ruby main.rb DAY
 ruby main.rb 1
+```
+
+## Rust
+(Requires rust-script)
+```bash
+# Run one day solutions
+./main.rs 2022 1
+# Run one day solutions using current year
+./main.rs 1
 ```
 
 ## Following
