@@ -54,5 +54,5 @@ let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8');
 
 // 10000`;
 
-console.log('day1 part1:', part1(input));
-console.log('day1 part2:', part2(input));
+console.log('part1:', part1(input));
+console.log('part2:', part2(input));
