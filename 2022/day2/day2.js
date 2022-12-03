@@ -59,7 +59,7 @@ function part2(input) {
   return score;
 }
 
-let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8');
+let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8').replaceAll('\r', '');
 
 // input = `
 // A Y

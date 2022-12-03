@@ -48,7 +48,7 @@ function part2(input) {
   return result.map(c => priority.indexOf(c) + 1).reduce((a, b) => a + b);
 }
 
-let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8');
+let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8').replaceAll('\r', '');
 
 // input = `
 // vJrwpWtwJgWrhcsFMMfFFhFp

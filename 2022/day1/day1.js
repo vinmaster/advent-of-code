@@ -36,7 +36,7 @@ function part2(input) {
   return max;
 }
 
-let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8');
+let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8').replaceAll('\r', '');
 
 // input = `
 // 1000
