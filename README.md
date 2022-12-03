@@ -91,23 +91,3 @@ ruby main.rb 1
 # Run one day solutions using current year
 ./main.rs 1
 ```
-
-## Following
-
-https://github.com/norvig/pytudes/tree/master/ipynb
-https://kufii.github.io/advent-of-code-2020/#/18
-
-- Clojure
-  - https://github.com/dawranliou/advent-of-code
-  - https://github.com/tschady/advent-of-code
-  - https://github.com/transducer/adventofcode
-  - https://www.youtube.com/channel/UC9m7D4XKPJqTPCLSBym3BCg/videos
-{
-  "key": "ctrl+enter",
-  "command": "clojureVSCode.evalAndShowResult",
-  "when": "editorTextFocus && !editorReadonly"
-}
-
-- JS/TypeScript
-  - https://github.com/RikKierkels/advent-of-code-2020
-  - https://github.com/tpatel/advent-of-code-2020 with youtube
