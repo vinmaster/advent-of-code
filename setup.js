@@ -7,11 +7,23 @@ const CONFIG = require('./config.json');
 const TIMEOUT = 10000;
 
 (async () => {
-  // Provide year and day
-  let year = parseInt(process.argv[2], 10);
-  let day = parseInt(process.argv[3], 10);
+  /** @type string[] */
+  let arglist = process.argv.slice(2, process.argv.length);
+  let args = { _: [] };
 
-  if (process.argv.length === 3) {
+  for (let i = 0; i < arglist.length; i++) {
+    if (arglist[i].includes('-')) {
+      args[arglist[i]] = arglist[i + 1];
+      i++;
+    } else {
+      args['_'].push(arglist[i]);
+    }
+  }
+
+  // Provide year and day
+  let [year, day] = args['_'].map(x => parseInt(x, 10));
+
+  if (day === undefined) {
     // Only day was provided
     day = year;
     year = new Date().getFullYear();
@@ -30,6 +42,47 @@ const TIMEOUT = 10000;
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
+
+  // Parse flags
+  for (let key of Object.keys(args)) {
+    if (key === '_') continue;
+
+    switch (key) {
+      case '-f':
+      case '--file':
+        let previousDay = day - 1;
+        while (previousDay >= 1) {
+          let file = `day${previousDay}.${args[key]}`;
+          let previousPath = `./${year}/day${previousDay}/${file}`;
+          let currentPath = `${directory}/day${day}.${args[key]}`;
+          if (fs.existsSync(currentPath)) {
+            console.log(`File already exists: ${currentPath}`);
+            break;
+          }
+          if (fs.existsSync(previousPath)) {
+            fs.copyFileSync(previousPath, currentPath);
+            console.log(`Copied file ${previousPath} to ${currentPath}`);
+            break;
+          }
+          previousDay--;
+        }
+        break;
+      case '-h':
+      case '--help':
+        console.log(`node setup.js [YEAR] DAY
+
+Options:
+
+  -f --file: Copies file extension from previous day
+`);
+        break;
+      default:
+        throw new Error(`Unknown flag: ${key}`);
+        break;
+    }
+  }
+
+  return;
 
   try {
     await download(`https://adventofcode.com/${year}/day/${day}/input`, `${directory}/input.txt`);
