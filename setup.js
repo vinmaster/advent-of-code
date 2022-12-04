@@ -30,7 +30,9 @@ const TIMEOUT = 10000;
   }
 
   if (!year || !day) {
-    throw new Error('No year and day');
+    // throw new Error('No year and day');
+    printHelp();
+    return;
   }
 
   const yearDirectory = `./${year}`;
@@ -50,46 +52,59 @@ const TIMEOUT = 10000;
     switch (key) {
       case '-f':
       case '--file':
-        let previousDay = day - 1;
-        while (previousDay >= 1) {
-          let file = `day${previousDay}.${args[key]}`;
-          let previousPath = `./${year}/day${previousDay}/${file}`;
-          let currentPath = `${directory}/day${day}.${args[key]}`;
-          if (fs.existsSync(currentPath)) {
-            console.log(`File already exists: ${currentPath}`);
-            break;
-          }
-          if (fs.existsSync(previousPath)) {
-            fs.copyFileSync(previousPath, currentPath);
-            console.log(`Copied file ${previousPath} to ${currentPath}`);
-            break;
-          }
-          previousDay--;
+        createFile(year, day, args[key]);
+        break;
+      case '-d':
+      case '--download':
+        try {
+          await download(
+            `https://adventofcode.com/${year}/day/${day}/input`,
+            `${directory}/input.txt`
+          );
+        } catch (error) {
+          console.error(error.message);
         }
         break;
       case '-h':
       case '--help':
-        console.log(`node setup.js [YEAR] DAY
-
-Options:
-
-  -f --file: Copies file extension from previous day
-`);
+        printHelp();
         break;
       default:
         throw new Error(`Unknown flag: ${key}`);
         break;
     }
   }
-
-  return;
-
-  try {
-    await download(`https://adventofcode.com/${year}/day/${day}/input`, `${directory}/input.txt`);
-  } catch (error) {
-    console.error(error.message);
-  }
 })();
+
+function createFile(year, day, ext) {
+  const directory = `./${year}/day${day}`;
+  let previousDay = day - 1;
+  while (previousDay >= 1) {
+    let file = `day${previousDay}.${ext}`;
+    let previousPath = `./${year}/day${previousDay}/${file}`;
+    let currentPath = `${directory}/day${day}.${ext}`;
+    if (fs.existsSync(currentPath)) {
+      console.log(`File already exists: ${currentPath}`);
+      break;
+    }
+    if (fs.existsSync(previousPath)) {
+      fs.copyFileSync(previousPath, currentPath);
+      console.log(`Copied file ${previousPath} to ${currentPath}`);
+      break;
+    }
+    previousDay--;
+  }
+}
+
+function printHelp() {
+  console.log(`node setup.js [YEAR] DAY
+
+  Options:
+  
+    -f --file: Copies file with given extension from the previous day
+    -d --download: Download input for the day
+  `);
+}
 
 function download(url, path) {
   const uri = parse(url);

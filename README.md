@@ -19,7 +19,7 @@
 # Download input (Requires config.json with SESSION_ID in it)
 # node setup.js YEAR DAY
 node setup.js 2018 1
-# Download input and copy file from previous day
+# Download input and copy .js file from previous day
 node setup.js -f js 1
 ```
 
