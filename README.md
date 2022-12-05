@@ -17,10 +17,12 @@
 
 ```bash
 # Download input (Requires config.json with SESSION_ID in it)
-# node setup.js YEAR DAY
-node setup.js 2018 1 -d true
+# node cli.js download -y YEAR -d DAY
+node cli.js download -d 1
 # Copy .js file from previous day
-node setup.js -f js 1
+node cli.js copy js -d 1
+# Print help
+node cli.js help
 ```
 
 ## My workflow
