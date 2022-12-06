@@ -9,7 +9,7 @@
   (fn [[n s]] [n (= num (count (distinct (take num (drop n s)))))]))
 
 (defn part1 [input]
-  (->> input 
+  (->> input
        (#(map vector (range (count %)) (repeat %)))
        (map (unique-with-num 4))
        (filter second)
@@ -26,3 +26,7 @@
 
 (prn "part1:" (part1 input))
 (prn "part2:" (part2 input))
+
+(comment 
+  ;; replaces (#(map vector (range (count %)) (repeat %)))
+  (prn (map (comp count set) (partition 4 1 input)) 4))
