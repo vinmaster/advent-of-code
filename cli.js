@@ -53,7 +53,9 @@ const TIMEOUT = 10000;
 // ----------------- COMMANDS -----------------
 async function downloadInput(year, day, options) {
   try {
-    let inputPath = `${getDirectory(year, day)}/input.txt`;
+    const directory = getDirectory(year, day);
+    maybeCreateDirectory(year, day);
+    let inputPath = `${directory}/input.txt`;
     if (!options.overwrite && fs.existsSync(inputPath)) {
       console.log(`Input already exists: ${inputPath} (Use to overwrite option to overwrite)`);
       return;
@@ -73,12 +75,13 @@ function copyFile(year, day, ext, options) {
     return;
   }
   const directory = getDirectory(year, day);
+  maybeCreateDirectory(year, day);
+  const currentPath = `${directory}/day${day}.${ext}`;
   let previousDay = day - 1;
   let isComplete = false;
   while (previousDay >= 1) {
     const file = `day${previousDay}.${ext}`;
     const previousPath = `./${year}/day${previousDay}/${file}`;
-    const currentPath = `${directory}/day${day}.${ext}`;
     if (!options.overwrite && fs.existsSync(currentPath)) {
       console.log(`File already exists: ${currentPath} (Use to overwrite option to overwrite)`);
       isComplete = true;
@@ -125,8 +128,8 @@ function parseOptions(args) {
   };
   // Puzzle day come out at 9pm PST
   if (today.getHours() >= 21) {
-    day += 1;
-    console.log(`Puzzle day is ${day}`);
+    options.day += 1;
+    console.log(`Puzzle day is ${options.day}`);
   }
 
   for (const key of Object.keys(args)) {
@@ -158,6 +161,17 @@ function parseOptions(args) {
 
 function getDirectory(year, day) {
   return `./${year}/day${day}`;
+}
+
+function maybeCreateDirectory(year, day) {
+  const yearDirectory = `./${year}`;
+  if (!fs.existsSync(yearDirectory)) {
+    fs.mkdirSync(yearDirectory);
+  }
+  const directory = getDirectory(year, day);
+  if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory);
+  }
 }
 
 function download(url, path) {
