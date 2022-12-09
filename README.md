@@ -13,7 +13,9 @@
 ## Website
 - https://adventofcode.com
 
-## Setup script 
+## CLI script
+### config.json
+Fill out config.json using config.json.sample. Optional user-agent can be added due to this: [link](https://www.reddit.com/r/adventofcode/comments/z9dhtd/please_include_your_contact_info_in_the_useragent/)
 
 ```bash
 # Download input (Requires config.json with SESSION_ID in it)

@@ -187,6 +187,9 @@ function download(url, path) {
         cookie: `session=${CONFIG.SESSION_ID}`,
       },
     };
+    if (CONFIG.USER_AGENT) {
+      options.headers['user-agent'] = CONFIG.USER_AGENT;
+    }
     const request = http.get(uri.href, options).on('response', function (res) {
       if (res.statusCode !== 200) {
         console.log(`Status code: ${res.statusCode}`);
