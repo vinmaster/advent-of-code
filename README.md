@@ -45,6 +45,17 @@ node main.js 2018 1
 node main.js 1
 ```
 
+## TypeScript
+(Requires Deno)
+```bash
+# Run one day solutions
+# deno run --allow-run main.ts YEAR DAY
+deno run --allow-run main.ts 2018 1
+# Run one day solutions using current year
+# deno run --allow-run main.ts DAY
+deno run --allow-run main.ts 1
+```
+
 ## Haskell
 ```bash
 # Compile
