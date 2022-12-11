@@ -39,7 +39,8 @@ const TIMEOUT = 10000;
       copyFile(year, day, commands[1], options);
       break;
     case 'submit':
-      console.log('Unimplemented');
+      let result = await submit(year, day, commands[1], commands[2]);
+      console.log(`Submit ${year} ${day}: ${parseSubmit(result)}`);
       break;
     case 'help':
       printHelp();
@@ -60,10 +61,10 @@ async function downloadInput(year, day, options) {
       console.log(`Input already exists: ${inputPath} (Use to overwrite option to overwrite)`);
       return;
     }
-    await download(
-      `https://adventofcode.com/${year}/day/${day}/input`,
-      `${getDirectory(year, day)}/input.txt`
-    );
+    let url = `https://adventofcode.com/${year}/day/${day}/input`;
+    let path = `${getDirectory(year, day)}/input.txt`;
+    await download(url, path);
+    console.log(`${year} ${day} downloaded to: ${path}`);
   } catch (error) {
     console.error(error.message);
   }
@@ -105,15 +106,15 @@ function printHelp() {
 Usage: node cli.js [OPTIONS] [COMMAND]
 
 Commands:
-  download    Download puzzle input for the given day
-  copy <ext>  Copies file with given extension from previous day
-  submit      Submit puzzle answer
-  help        Print this message
+  download                Download puzzle input for the given day
+  copy <ext>              Copies file with given extension from previous day
+  submit <part> <answer>  Submit puzzle answer
+  help                    Print this message
 
 Options:
-  -d, --day <DAY>            Puzzle day [default: current day if in December]
-  -y, --year <YEAR>          Puzzle year [default: current year]
-  -o, --overwrite yes        Overwrite file if they already exist
+  -d, --day <DAY>         Puzzle day [default: current day if in December]
+  -y, --year <YEAR>       Puzzle year [default: current year]
+  -o, --overwrite yes     Overwrite file if they already exist
 `);
 }
 
@@ -207,7 +208,6 @@ function download(url, path) {
         })
         .on('end', function () {
           file.end();
-          console.log(`${uri.path} downloaded to: ${path}`);
           file.on('finish', () => {
             resolve();
           });
@@ -219,8 +219,65 @@ function download(url, path) {
     });
     request.setTimeout(TIMEOUT, function () {
       fs.unlink(path);
-      request.abort();
+      request.destroy();
       reject(new Error(`request timeout after ${TIMEOUT / 1000.0}s`));
     });
   });
+}
+
+function submit(year, day, part, answer) {
+  if (!part || !answer) {
+    console.log('No part or answer given');
+    return;
+  }
+  return new Promise(function (resolve, reject) {
+    let body = `level=${part}&answer=${answer}`;
+    const options = {
+      host: 'adventofcode.com',
+      path: `/${year}/day/${day}/answer`,
+      headers: {
+        accept: 'text/html',
+        'content-type': 'application/x-www-form-urlencoded',
+        'content-length': Buffer.byteLength(body),
+        cookie: `session=${CONFIG.SESSION_ID}`,
+      },
+      method: 'POST',
+    };
+    if (CONFIG.USER_AGENT) {
+      options.headers['user-agent'] = CONFIG.USER_AGENT;
+    }
+
+    let request = http.request(options, res => {
+      res.setEncoding('utf8');
+      if (res.statusCode !== 200) {
+        console.log(`Status code: ${res.statusCode}`);
+        return reject(new Error('Error submitting'));
+      }
+      let str = '';
+      res
+        .on('data', function (chunk) {
+          str += chunk;
+        })
+        .on('end', function () {
+          resolve(str);
+        })
+        .on('error', function (err) {
+          reject(err);
+        });
+    });
+    request.write(body);
+    request.end();
+  });
+}
+
+function parseSubmit(result) {
+  try {
+    let [, matches] = [
+      ...result.replaceAll('\n', '').matchAll(/.*\<article\>(.*)\<\/article\>/g),
+    ][0];
+    return matches;
+  } catch (error) {
+    console.log(result);
+    throw error;
+  }
 }
