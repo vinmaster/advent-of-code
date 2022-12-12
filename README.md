@@ -87,6 +87,16 @@ bb mainbb.clj 2021 1
 bb mainbb.clj 1
 ```
 
+## Python
+```bash
+# Run one day solutions
+# python3 main.py YEAR DAY
+python3 main.py 2022 1
+# Run one day solutions using current year
+# python3 main.py DAY
+python3 main.py 1
+```
+
 ## Ruby
 ```bash
 # Run one year solutions
