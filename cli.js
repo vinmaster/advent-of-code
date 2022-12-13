@@ -40,7 +40,7 @@ const TIMEOUT = 10000;
       break;
     case 'submit':
       let result = await submit(year, day, commands[1], commands[2]);
-      console.log(`Submit ${year} ${day}: ${parseSubmit(result)}`);
+      if (result) console.log(`Submit ${year} ${day}: ${parseSubmit(result)}`);
       break;
     case 'help':
       printHelp();
