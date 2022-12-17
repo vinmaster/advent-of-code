@@ -97,5 +97,6 @@ Sensor at x=20, y=1: closest beacon is at x=15, y=3
 <p>If you still want to see it, you can <a href="15/input" target="_blank">get your puzzle input</a>.</p>
 <p>You can also <span class="share">[Share<span class="share-content">on
   <a href="https://twitter.com/intent/tweet?text=I%27ve+completed+%22Beacon+Exclusion+Zone%22+%2D+Day+15+%2D+Advent+of+Code+2022&amp;url=https%3A%2F%2Fadventofcode%2Ecom%2F2022%2Fday%2F15&amp;related=ericwastl&amp;hashtags=AdventOfCode" target="_blank">Twitter</a>
-  <a href="javascript:void(0);" onclick="var mastodon_instance=prompt('Mastodon Instance / Server Name?'); if(typeof mastodon_instance==='string' &amp;&amp; mastodon_instance.length){this.href='https://'+mastodon_instance+'/share?text=I%27ve+completed+%22Beacon+Exclusion+Zone%22+%2D+Day+15+%2D+Advent+of+Code+2022+%23AdventOfCode+https%3A%2F%2Fadventofcode%2Ecom%2F2022%2Fday%2F15'}else{return false;}" target="_blank">Mastodon</a></span>]</span> this puzzle.</p>
+  <a href="javascript:void(0);" onclick="var mastodon_instance=prompt('Mastodon Instance / Server Name?'); if(typeof mastodon_instance==='string' && mastodon_instance.length){this.href='https://'+mastodon_instance+'/share?text=I%27ve+completed+%22Beacon+Exclusion+Zone%22+%2D+Day+15+%2D+Advent+of+Code+2022+%23AdventOfCode+https%3A%2F%2Fadventofcode%2Ecom%2F2022%2Fday%2F15'}else{return false;}" target="_blank">Mastodon</a
+></span>]</span> this puzzle.</p>
 </main>

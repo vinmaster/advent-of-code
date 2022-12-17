@@ -32,44 +32,32 @@ const TIMEOUT = 10000;
   }
 
   switch (commands[0]) {
-    case 'download':
+    case 'download': {
       await downloadInput(year, day, options);
       break;
+    }
     case 'copy':
       copyFile(year, day, commands[1], options);
       break;
-    case 'submit':
+    case 'submit': {
       let result = await submit(year, day, commands[1], commands[2]);
       if (result) console.log(`Submit ${year} ${day}: ${parseSubmit(result)}`);
       break;
+    }
+    case 'prompt': {
+      await downloadPrompt(year, day, options);
+      await cleanPrompt(year, day);
+      break;
+    }
     case 'help':
       printHelp();
       break;
     default:
       throw new Error(`Invalid command: ${key}`);
-      break;
   }
 })();
 
 // ----------------- COMMANDS -----------------
-async function downloadInput(year, day, options) {
-  try {
-    const directory = getDirectory(year, day);
-    maybeCreateDirectory(year, day);
-    let inputPath = `${directory}/input.txt`;
-    if (!options.overwrite && fs.existsSync(inputPath)) {
-      console.log(`Input already exists: ${inputPath} (Use to overwrite option to overwrite)`);
-      return;
-    }
-    let url = `https://adventofcode.com/${year}/day/${day}/input`;
-    let path = `${getDirectory(year, day)}/input.txt`;
-    await download(url, path);
-    console.log(`${year} ${day} downloaded to: ${path}`);
-  } catch (error) {
-    console.error(error.message);
-  }
-}
-
 function copyFile(year, day, ext, options) {
   if (!ext) {
     console.log('No ext given');
@@ -109,6 +97,7 @@ Commands:
   download                Download puzzle input for the given day
   copy <ext>              Copies file with given extension from previous day
   submit <part> <answer>  Submit puzzle answer
+  prompt                  Get prompt
   help                    Print this message
 
 Options:
@@ -175,7 +164,16 @@ function maybeCreateDirectory(year, day) {
   }
 }
 
-function download(url, path) {
+function downloadInput(year, day, options) {
+  const directory = getDirectory(year, day);
+  maybeCreateDirectory(year, day);
+  let path = `${directory}/input.txt`;
+  if (!options.overwrite && fs.existsSync(path)) {
+    console.log(`Input already exists: ${path} (Use to overwrite option to overwrite)`);
+    return;
+  }
+  let url = `https://adventofcode.com/${year}/day/${day}/input`;
+
   const uri = parse(url);
   if (!path) {
     path = basename(uri.path);
@@ -183,15 +181,15 @@ function download(url, path) {
   const file = fs.createWriteStream(path);
 
   return new Promise(function (resolve, reject) {
-    const options = {
+    const httpOptions = {
       headers: {
         cookie: `session=${CONFIG.SESSION_ID}`,
       },
     };
     if (CONFIG.USER_AGENT) {
-      options.headers['user-agent'] = CONFIG.USER_AGENT;
+      httpOptions.headers['user-agent'] = CONFIG.USER_AGENT;
     }
-    const request = http.get(uri.href, options).on('response', function (res) {
+    const request = http.get(uri.href, httpOptions).on('response', function (res) {
       if (res.statusCode !== 200) {
         console.log(`Status code: ${res.statusCode}`);
         return reject(new Error('Error fetching input'));
@@ -209,6 +207,7 @@ function download(url, path) {
         .on('end', function () {
           file.end();
           file.on('finish', () => {
+            console.log(`${year} ${day} downloaded to: ${path}`);
             resolve();
           });
         })
@@ -223,6 +222,75 @@ function download(url, path) {
       reject(new Error(`request timeout after ${TIMEOUT / 1000.0}s`));
     });
   });
+}
+
+function downloadPrompt(year, day, options) {
+  const directory = getDirectory(year, day);
+  maybeCreateDirectory(year, day);
+  let path = `${directory}/README.md`;
+  if (!options.overwrite && fs.existsSync(path)) {
+    console.log(`Prompt already exists: ${path} (Use to overwrite option to overwrite)`);
+    return;
+  }
+  let url = `https://adventofcode.com/${year}/day/${day}`;
+
+  const uri = parse(url);
+  if (!path) {
+    path = basename(uri.path);
+  }
+  const file = fs.createWriteStream(path);
+
+  return new Promise(function (resolve, reject) {
+    const httpOptions = {
+      headers: {
+        cookie: `session=${CONFIG.SESSION_ID}`,
+      },
+    };
+    if (CONFIG.USER_AGENT) {
+      httpOptions.headers['user-agent'] = CONFIG.USER_AGENT;
+    }
+    const request = http.get(uri.href, httpOptions).on('response', function (res) {
+      if (res.statusCode !== 200) {
+        console.log(`Status code: ${res.statusCode}`);
+        return reject(new Error('Error fetching prompt'));
+      }
+      res.on('error', function (err) {
+        fs.unlink(path);
+        reject(err);
+      });
+      file.on('finish', () => {
+        console.log(`${year} ${day} downloaded to: ${path}`);
+        resolve({});
+      });
+
+      res.pipe(file);
+    });
+    request.setTimeout(TIMEOUT, function () {
+      fs.unlink(path);
+      request.destroy();
+      reject(new Error(`request timeout after ${TIMEOUT / 1000.0}s`));
+    });
+  });
+}
+
+function cleanPrompt(year, day) {
+  const directory = getDirectory(year, day);
+  maybeCreateDirectory(year, day);
+  let path = `${directory}/README.md`;
+  if (!fs.existsSync(path)) {
+    console.log(`Prompt does not exist: ${path}`);
+    return;
+  }
+  let file = fs.readFileSync(path, 'utf8');
+  let lines = file.split('\n');
+  let isMain = false;
+  for (let i = 0; i < lines.length; ) {
+    if (lines[i].includes('main>')) isMain = !isMain;
+    if (!isMain) lines.splice(i, 1);
+    else i++;
+  }
+  lines.push('</main>', '');
+  fs.writeFileSync(path, lines.join('\n'));
 }
 
 function submit(year, day, part, answer) {
