@@ -21,5 +21,6 @@ console.timeEnd('Finished in');
 if (success) {
   await Deno.stdout.write(await p.output());
 } else {
+  await Deno.stdout.write(await p.output());
   console.log(new TextDecoder().decode(await p.stderrOutput()));
 }
