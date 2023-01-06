@@ -121,6 +121,11 @@ function parseOptions(args) {
     options.day += 1;
     console.log(`Puzzle day is ${options.day}`);
   }
+  // Puzzles comes out in December (month 11)
+  if (today.getMonth() < 11) {
+    options.year -= 1;
+    console.log(`Puzzle year is ${options.year}`);
+  }
 
   for (const key of Object.keys(args)) {
     if (key === '_') continue;
