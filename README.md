@@ -81,6 +81,8 @@ inlein main.clj 1
 
 (Requires Babashka)
 ```bash
+# Jack-in to repl
+bb nrepl-server
 # Run one day solutions
 bb mainbb.clj 2021 1
 # Run one day solutions for current year
