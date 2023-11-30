@@ -75,6 +75,15 @@ deno run --allow-run main-deno.ts 2018 1
 deno run --allow-run main-deno.ts 1
 ```
 
+## C#
+
+(Requires dotnet + dotnet-script)
+
+```bash
+# dotnet script PATH_TO_CS_FILE
+dotnet script 2023/day1/day1.cs
+```
+
 ## Haskell
 
 ```bash
