@@ -10,16 +10,15 @@ const CONFIG = await Bun.file('config.json').json();
 
 const args = convertArgs(Bun.argv);
 const options = parseOptions(args);
-process.exit(0);
 
-console.log(`Puzzle year is ${options.year}`);
-console.log(`Puzzle day is ${options.day}`);
+// console.log(`Puzzle year is ${options.year}`);
+// console.log(`Puzzle day is ${options.day}`);
 
 const { year, day } = options;
 
 const commands = args['_'];
 if (commands.length === 0) {
-  console.log('No commands given');
+  console.error('No commands given');
   printHelp();
   process.exit(0);
 }
@@ -42,6 +41,11 @@ switch (commands[0]) {
     // await cleanPrompt(year, day);
     break;
   }
+  case 'list': {
+    const ext = commands[1];
+    await listFiles(year, ext);
+    break;
+  }
   case 'help':
     printHelp();
     break;
@@ -60,6 +64,7 @@ Commands:
   copy <ext>              Copies file with given extension from previous day
   submit <part> <answer>  Submit puzzle answer
   prompt                  Get prompt
+  list <ext>              List solutions for the year. Can filter by extension
   help                    Print this message
 
 Options:
@@ -67,6 +72,32 @@ Options:
   -y, --year <YEAR>       Puzzle year [default: current year]
   -o, --overwrite yes     Overwrite file if they already exist
 `);
+}
+
+async function listFiles(year: number, ext?: string) {
+  if (year) {
+    let yearPath = `./${year}`;
+    if (fs.existsSync(yearPath)) {
+      let days = (await fs.promises.readdir(yearPath)) as string[];
+      days = days
+        .map(d => Number(d.replace('day', '')))
+        .sort((a, b) => a - b)
+        .map(n => `day${n}`);
+      for (const day of days) {
+        let files = (await fs.promises.readdir(`${yearPath}/${day}`)) as string[];
+        if (ext)
+          console.log(
+            day,
+            files.filter(f => !f.endsWith('.md') && !f.endsWith('.txt') && f.endsWith(`.${ext}`))
+          );
+        else
+          console.log(
+            day,
+            files.filter(f => !f.endsWith('.md') && !f.endsWith('.txt'))
+          );
+      }
+    }
+  }
 }
 
 function getPuzzlePath(year: number, day: number) {

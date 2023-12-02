@@ -12,6 +12,6 @@ if __name__ == '__main__':
     year = args[1]
     day = args[2]
 
-  print('Running', year, day)
+  # print('Running', year, day)
 
   subprocess.run(['python3', f'{year}/day{day}/day{day}.py'])

@@ -27,7 +27,7 @@ fn main() {
         year = args[1].parse::<i32>().unwrap();
         day = args[2].parse::<i32>().unwrap();
     }
-    println!("Running: {} {}", year, day);
+    // println!("Running: {} {}", year, day);
     
     let path = format!("{year}/day{day}/day{day}.rs");
     let output = Command::new("rust-script")

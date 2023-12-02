@@ -27,7 +27,7 @@ if (!fs.existsSync(path)) {
   process.exit(1);
 }
 
-console.log(`Running ${year} ${day}`);
+// console.log(`Running ${year} ${day}`);
 
 console.time('⬅️ Finished in');
 

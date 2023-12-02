@@ -26,7 +26,7 @@ def main
       day = year
       year = Time.new.year
     end
-    puts "Running year #{year} day #{day}"
+    # puts "Running year #{year} day #{day}"
     stdout, stderr, status = Open3.capture3("ruby ./#{year}/day#{day}/day#{day}.rb")
     if !stderr.empty?
       raise stderr

@@ -22,6 +22,10 @@
 Fill out config.json using config.json.sample. Optional user-agent can be added due to this: [link](https://www.reddit.com/r/adventofcode/comments/z9dhtd/please_include_your_contact_info_in_the_useragent/)
 
 ```bash
+# List all the solution for the year
+bun cli.ts list
+
+# --- OLD CLI ---
 # Download input (Requires config.json with SESSION_ID in it)
 # node cli.js download -y YEAR -d DAY
 node cli.js download -d 1
@@ -35,6 +39,7 @@ node cli.js help
 
 ```bash
 chokidar -p true --polling-interval 1000 "20*/**/*" -c "node main.js 2019 11 | tee output.txt"
+chokidar "20*/**/*" -c "python3 main.py 1 > output.txt 2>&1"
 ```
 
 ## JavaScript
@@ -75,28 +80,6 @@ deno run --allow-run main-deno.ts 2018 1
 deno run --allow-run main-deno.ts 1
 ```
 
-## C#
-
-(Requires dotnet + dotnet-script)
-
-```bash
-# dotnet script PATH_TO_CS_FILE
-dotnet script 2023/day1/day1.cs
-```
-
-## Haskell
-
-```bash
-# Compile
-stack ghc 2019/day1/day1.hs
-# Run compiled
-2019/day1/day1.exe
-# Run without compiling
-stack runghc -- main.hs 2019 1
-# Run file directly
-stack runghc -- 2019/day1/day1.hs
-```
-
 ## Clojure
 
 (Requires inlein)
@@ -119,6 +102,15 @@ bb nrepl-server
 bb main-bb.clj 2021 1
 # Run one day solutions for current year
 bb main-bb.clj 1
+```
+
+## C#
+
+(Requires dotnet + dotnet-script)
+
+```bash
+# dotnet script PATH_TO_CS_FILE
+dotnet script 2023/day1/day1.cs
 ```
 
 ## Python
@@ -155,4 +147,17 @@ ruby main.rb 1
 ./main.rs 2022 1
 # Run one day solutions using current year
 ./main.rs 1
+```
+
+## Haskell
+
+```bash
+# Compile
+stack ghc 2019/day1/day1.hs
+# Run compiled
+2019/day1/day1.exe
+# Run without compiling
+stack runghc -- main.hs 2019 1
+# Run file directly
+stack runghc -- 2019/day1/day1.hs
 ```
