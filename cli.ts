@@ -32,13 +32,12 @@ switch (commands[0]) {
     copyFile(year, day, commands[1], options);
     break;
   case 'submit': {
-    // let result = await submit(year, day, commands[1], commands[2]);
-    // if (result) console.log(`Submit ${year} ${day}: ${parseSubmit(result)}`);
+    await submit(year, day, commands[1], commands[2]);
     break;
   }
   case 'prompt': {
-    // await downloadPrompt(year, day, options);
-    // await cleanPrompt(year, day);
+    await downloadPrompt(year, day, options);
+    await cleanPrompt(year, day);
     break;
   }
   case 'list': {
@@ -74,6 +73,101 @@ Options:
 `);
 }
 
+async function downloadInput(year: number, day: number, options?: Options) {
+  let filePath = `${getPuzzlePath(year, day)}/input.txt`;
+  if (!options?.overwrite && (await Bun.file(filePath).exists())) {
+    console.log(`Input already exists: ${filePath} (Use to overwrite option (-o) to overwrite)`);
+    return;
+  }
+  let url = `https://adventofcode.com/${year}/day/${day}/input`;
+  let response = await fetch(url, {
+    headers: { cookie: `session=${CONFIG.SESSION_ID}` },
+  });
+  maybeCreateDirectory(year, day);
+  // let text = (await response.text()) as string;
+  await Bun.write(filePath, response);
+  console.log(`File downloaded to: ${filePath}`);
+}
+
+function copyFile(year: number, day: number, ext: string, options: Options) {
+  if (!ext) {
+    console.error('No ext given');
+    return;
+  }
+  maybeCreateDirectory(year, day);
+  const puzzlePath = getPuzzlePath(year, day);
+  const currentPath = `${puzzlePath}/day${day}.${ext}`;
+  let previousDay = day - 1;
+  let isComplete = false;
+  while (previousDay >= 1) {
+    const file = `day${previousDay}.${ext}`;
+    const previousPath = `./${year}/day${previousDay}/${file}`;
+    if (!options.overwrite && fs.existsSync(currentPath)) {
+      console.log(
+        `File already exists: ${currentPath} (Use to overwrite option (-o) to overwrite)`
+      );
+      isComplete = true;
+      break;
+    }
+    if (fs.existsSync(previousPath)) {
+      fs.copyFileSync(previousPath, currentPath);
+      console.log(`Copied file ${previousPath} to ${currentPath}`);
+      isComplete = true;
+      break;
+    }
+    previousDay--;
+  }
+  if (!isComplete) {
+    console.log('No previous file to copy this year');
+  }
+}
+
+async function submit(year, day, part, answer) {
+  if (!part || !answer) {
+    console.error('No part or answer given');
+    return;
+  }
+  let url = `https://adventofcode.com/${year}/day/${day}/answer`;
+  let body = `level=${part}&answer=${answer}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    body,
+    headers: {
+      cookie: `session=${CONFIG.SESSION_ID}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Length': Buffer.byteLength(body),
+    },
+  });
+
+  const result = await response.text();
+  try {
+    let [, matches] = [
+      ...result.replaceAll('\n', '').matchAll(/.*\<article\>(.*)\<\/article\>/g),
+    ][0];
+    console.log(matches);
+    return matches;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+async function downloadPrompt(year, day, options) {
+  maybeCreateDirectory(year, day);
+  const puzzlePath = getPuzzlePath(year, day);
+  let path = `${puzzlePath}/README.md`;
+  if (!options.overwrite && fs.existsSync(path)) {
+    console.log(`Prompt already exists: ${path} (Use to overwrite option (-o) to overwrite)`);
+    return;
+  }
+  let url = `https://adventofcode.com/${year}/day/${day}`;
+  let response = await fetch(url, {
+    headers: { cookie: `session=${CONFIG.SESSION_ID}` },
+  });
+  await Bun.write(path, response);
+  console.log(`Prompt downloaded to: ${path}`);
+}
+
 async function listFiles(year: number, ext?: string) {
   if (year) {
     let yearPath = `./${year}`;
@@ -100,50 +194,24 @@ async function listFiles(year: number, ext?: string) {
   }
 }
 
-function getPuzzlePath(year: number, day: number) {
-  return `./${year}/day${day}`;
-}
-
-async function downloadInput(year: number, day: number, options?: Options) {
-  let url = `https://adventofcode.com/${year}/day/${day}/input`;
-  let response = await fetch(url, {
-    headers: { cookie: `session=${CONFIG.SESSION_ID}` },
-  });
-  maybeCreateDirectory(year, day);
-  let filePath = `${getPuzzlePath(year, day)}/input.txt`;
-  // let text = (await response.text()) as string;
-  await Bun.write(filePath, response);
-}
-
-function copyFile(year: number, day: number, ext: string, options: Options) {
-  if (!ext) {
-    console.log('No ext given');
-    return;
-  }
+function cleanPrompt(year, day) {
   maybeCreateDirectory(year, day);
   const puzzlePath = getPuzzlePath(year, day);
-  const currentPath = `${puzzlePath}/day${day}.${ext}`;
-  let previousDay = day - 1;
-  let isComplete = false;
-  while (previousDay >= 1) {
-    const file = `day${previousDay}.${ext}`;
-    const previousPath = `./${year}/day${previousDay}/${file}`;
-    if (!options.overwrite && fs.existsSync(currentPath)) {
-      console.log(`File already exists: ${currentPath} (Use to overwrite option to overwrite)`);
-      isComplete = true;
-      break;
-    }
-    if (fs.existsSync(previousPath)) {
-      fs.copyFileSync(previousPath, currentPath);
-      console.log(`Copied file ${previousPath} to ${currentPath}`);
-      isComplete = true;
-      break;
-    }
-    previousDay--;
+  let path = `${puzzlePath}/README.md`;
+  if (!fs.existsSync(path)) {
+    console.error(`Prompt does not exist: ${path}`);
+    return;
   }
-  if (!isComplete) {
-    console.log('No previous file to copy this year');
+  let file = fs.readFileSync(path, 'utf8');
+  let lines = file.split('\n');
+  let isMain = false;
+  for (let i = 0; i < lines.length; ) {
+    if (lines[i].includes('main>')) isMain = !isMain;
+    if (!isMain) lines.splice(i, 1);
+    else i++;
   }
+  lines.push('</main>', '');
+  fs.writeFileSync(path, lines.join('\n'));
 }
 
 function maybeCreateDirectory(year: number, day: number) {
@@ -213,4 +281,8 @@ function parseOptions(args: Record<string, any>): Options {
     }
   }
   return options;
+}
+
+function getPuzzlePath(year: number, day: number) {
+  return `./${year}/day${day}`;
 }

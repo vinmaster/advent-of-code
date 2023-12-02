@@ -22,8 +22,19 @@
 Fill out config.json using config.json.sample. Optional user-agent can be added due to this: [link](https://www.reddit.com/r/adventofcode/comments/z9dhtd/please_include_your_contact_info_in_the_useragent/)
 
 ```bash
+# Download input (Requires config.json with SESSION_ID in it)
+# bun cli.ts download -y YEAR -d DAY
+bun cli.ts -d 1 download
+# Copy .ts file from previous day
+bun cli.ts -d 1 copy ts
+# Submit answer PART ANSWER
+bun cli.ts -d 1 submit 1 123
+# Get prompt
+bun cli.ts -d 1 prompt
 # List all the solution for the year
 bun cli.ts list
+# Print help
+bun cli.ts help
 
 # --- OLD CLI ---
 # Download input (Requires config.json with SESSION_ID in it)
