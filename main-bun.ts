@@ -8,9 +8,18 @@ process.on('SIGINT', () => {
 });
 
 let [, , year, day] = Bun.argv;
+let date = new Date();
 if (!day) {
   day = year;
-  year = new Date().getFullYear().toString();
+  year = date.getFullYear().toString();
+}
+
+if (!day) {
+  day = date.getDate();
+  // Comes out on
+  if (date.getUTCHours() - 5 >= 0) {
+    day += 1;
+  }
 }
 
 let path = `${year}/day${day}`;
