@@ -112,7 +112,7 @@ function part2(input: string) {
         let mappingRange = mapping.deltas[i];
         let delta = mappingRange[2];
         // Case 1: seed range start/end is before mapping range start
-        if (seedRange[1] < mappingRange[0]) {
+        if (seedRange[1] <= mappingRange[0]) {
           continue;
         }
         // Case 2: seed range start/end is between mapping range start
@@ -123,6 +123,10 @@ function part2(input: string) {
             (i === 0 || (i > 0 && mapping.deltas[i - 1][1] < seedRange[0]))
           ) {
             newRanges.push([seedRange[0], mappingRange[0] - 1]);
+          }
+          // Case 2.5: seed range is bigger than mapping range and covers it
+          if (mappingRange[1] < seedRange[1] && i === mapping.deltas.length - 1) {
+            newRanges.push([mappingRange[1], seedRange[1]]);
           }
           newRanges.push([mappingRange[0] + delta, seedRange[1] + delta]);
           added = true;
@@ -146,7 +150,7 @@ function part2(input: string) {
           added = true;
         }
         // Case 5: seed range start/end is after mapping range end
-        else if (seedRange[0] > mappingRange[1]) {
+        else if (seedRange[0] >= mappingRange[1]) {
           continue;
         }
       }
