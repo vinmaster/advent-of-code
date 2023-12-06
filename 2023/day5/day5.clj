@@ -2,7 +2,7 @@
 
 (def input-raw (slurp (-> *file* (str/split #"/") butlast (#(str/join "/" %)) (str "/input.txt"))))
 
-(def input-raw "
+#_(def input-raw "
 seeds: 79 14 55 13
 
 seed-to-soil map:
