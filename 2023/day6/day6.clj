@@ -20,16 +20,16 @@ Distance:  9  40  200")
        count))
 
 (defn part1 [input]
-  (let [times (map (comp parse-long first) (re-seq #"(\d+)" (first input)))
-        distances (map (comp parse-long first) (re-seq #"(\d+)" (second input)))
+  (let [times (map parse-long (re-seq #"\d+" (first input)))
+        distances (map parse-long (re-seq #"\d+" (second input)))
         pairs (partition 2 (interleave times distances))]
     (->> pairs
          (map #(apply get-matches %))
          (reduce *))))
 
 (defn part2 [input]
-  (let [time (first (map (comp parse-long first) (re-seq #"(\d+)" (str/replace (first input) #"\s+" ""))))
-        distance (first (map (comp parse-long first) (re-seq #"(\d+)" (str/replace (second input) #"\s+" ""))))]
+  (let [time (first (map parse-long (re-seq #"\d+" (str/replace (first input) #"\s+" ""))))
+        distance (first (map parse-long (re-seq #"\d+" (str/replace (second input) #"\s+" ""))))]
     (get-matches time distance)))
 
 (println "part1:" (part1 input))
