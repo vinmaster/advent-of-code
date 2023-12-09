@@ -80,9 +80,11 @@ async function downloadInput(year: number, day: number, options?: Options) {
     return;
   }
   let url = `https://adventofcode.com/${year}/day/${day}/input`;
-  let response = await fetch(url, {
-    headers: { cookie: `session=${CONFIG.SESSION_ID}` },
-  });
+  let headers = { cookie: `session=${CONFIG.SESSION_ID}` };
+  if (CONFIG.USER_AGENT) {
+    headers['user-agent'] = CONFIG.USER_AGENT;
+  }
+  let response = await fetch(url, { headers });
   maybeCreateDirectory(year, day);
   // let text = (await response.text()) as string;
   await Bun.write(filePath, response);
@@ -129,14 +131,18 @@ async function submit(year, day, part, answer) {
   }
   let url = `https://adventofcode.com/${year}/day/${day}/answer`;
   let body = `level=${part}&answer=${answer}`;
+  let headers = {
+    cookie: `session=${CONFIG.SESSION_ID}`,
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Length': Buffer.byteLength(body),
+  };
+  if (CONFIG.USER_AGENT) {
+    headers['user-agent'] = CONFIG.USER_AGENT;
+  }
   const response = await fetch(url, {
     method: 'POST',
     body,
-    headers: {
-      cookie: `session=${CONFIG.SESSION_ID}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Content-Length': Buffer.byteLength(body),
-    },
+    headers,
   });
 
   const result = await response.text();
@@ -161,9 +167,11 @@ async function downloadPrompt(year, day, options) {
     return;
   }
   let url = `https://adventofcode.com/${year}/day/${day}`;
-  let response = await fetch(url, {
-    headers: { cookie: `session=${CONFIG.SESSION_ID}` },
-  });
+  let headers = { cookie: `session=${CONFIG.SESSION_ID}` };
+  if (CONFIG.USER_AGENT) {
+    headers['user-agent'] = CONFIG.USER_AGENT;
+  }
+  let response = await fetch(url, { headers });
   await Bun.write(path, response);
   console.log(`Prompt downloaded to: ${path}`);
 }

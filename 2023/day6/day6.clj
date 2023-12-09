@@ -11,12 +11,21 @@ Distance:  9  40  200")
       str/trim
       (str/split-lines)))
 
-(defn get-matches [time distance]
-  (->> (range)
-       (map inc)
-       (map (fn [velocity-time-left] (* velocity-time-left (- time velocity-time-left))))
+#_(defn get-matches [time distance]
+    (->> (range time)
+         (map inc)
+         (map (fn [velocity-time-left] (* velocity-time-left (- time velocity-time-left))))
+         (drop-while neg?)
+         (take-while pos?)
+      ;;  (filter #(> % distance))
+         count))
+
+;; Performance improvement from Daniel
+(defn get-matches [d record]
+  (->> (range d)
+       (map (fn [x] (+ (* (- x) x) (* d x) (- record))))
+       (drop-while neg?)
        (take-while pos?)
-       (filter #(> % distance))
        count))
 
 (defn part1 [input]

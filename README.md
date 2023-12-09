@@ -53,7 +53,9 @@ chokidar -p true --polling-interval 1000 "20*/**/*" -c "node main.js 2019 11 | t
 chokidar "20*/**/*" -c "python3 main.py 1 > output.txt 2>&1"
 ```
 
-## JavaScript
+## Running solutions
+
+### JavaScript
 
 ```bash
 # Run one year solutions
@@ -67,7 +69,7 @@ node main.js 2018 1
 node main.js 1
 ```
 
-## TypeScript
+### TypeScript
 
 (Requires Bun)
 
@@ -91,7 +93,7 @@ deno run --allow-run main-deno.ts 2018 1
 deno run --allow-run main-deno.ts 1
 ```
 
-## Clojure
+### Clojure
 
 (Requires inlein)
 
@@ -115,7 +117,7 @@ bb main-bb.clj 2021 1
 bb main-bb.clj 1
 ```
 
-## C#
+### C#
 
 (Requires dotnet + dotnet-script)
 
@@ -124,7 +126,7 @@ bb main-bb.clj 1
 dotnet script 2023/day1/day1.cs
 ```
 
-## Python
+### Python
 
 ```bash
 # Run one day solutions
@@ -135,7 +137,7 @@ python3 main.py 2022 1
 python3 main.py 1
 ```
 
-## Ruby
+### Ruby
 
 ```bash
 # Run one year solutions
@@ -149,7 +151,7 @@ ruby main.rb 2018 1
 ruby main.rb 1
 ```
 
-## Rust
+### Rust
 
 (Requires rust-script)
 
@@ -160,7 +162,14 @@ ruby main.rb 1
 ./main.rs 1
 ```
 
-## Haskell
+### Lua
+
+```bash
+# Run file directly
+lua 2023/day1/day1.lua
+```
+
+### Haskell
 
 ```bash
 # Compile
@@ -171,4 +180,11 @@ stack ghc 2019/day1/day1.hs
 stack runghc -- main.hs 2019 1
 # Run file directly
 stack runghc -- 2019/day1/day1.hs
+```
+
+### Zig
+
+```bash
+# Run file directly
+zig run 2023/day1/day1.zig
 ```
