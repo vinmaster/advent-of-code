@@ -38,7 +38,15 @@ function part2(input) {
   return sum;
 }
 
+// @ts-ignore: next-line
 let input = await Bun.file(`${import.meta.dir}/input.txt`).text();
+
+// Using stdin
+// @ts-ignore: next-line
+// let input = await Bun.readableStreamToText(Bun.stdin.stream());
+
+// Using browser
+// let input = document.getElementsByTagName('pre')[0].textContent;
 
 // input = `
 // 1abc2

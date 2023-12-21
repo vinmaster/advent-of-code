@@ -24,7 +24,7 @@ if (commands.length === 0) {
 }
 
 switch (commands[0]) {
-  case 'download': {
+  case 'input': {
     await downloadInput(year, day, options);
     break;
   }
@@ -59,10 +59,10 @@ function printHelp() {
 Usage: bun cli.ts [OPTIONS] [COMMAND]
 
 Commands:
-  download                Download puzzle input for the given day
+  input                   Download puzzle input for the given day
   copy <ext>              Copies file with given extension from previous day
   submit <part> <answer>  Submit puzzle answer
-  prompt                  Get prompt
+  prompt                  Download prompt
   list <ext>              List solutions for the year. Can filter by extension
   help                    Print this message
 

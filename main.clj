@@ -1,18 +1,23 @@
-'{:dependencies [[org.clojure/clojure "1.10.1"]]}
+(import 'java.time.format.DateTimeFormatter
+        'java.time.LocalDateTime)
 
-(defn current-year []
-  (.format (new java.text.SimpleDateFormat "yyyy") (java.util.Date.)))
+(def date (LocalDateTime/now))
+;; (def formatter (DateTimeFormatter/ofPattern "yyyy-MM-dd HH:mm:ss"))
+(def formatter (DateTimeFormatter/ofPattern "yyyy"))
 
-(defn run [year day]
-  (time (load-file (format "%s/day%s/day%s.clj" year day day)))
-  ;; (when (resolve (symbol "part1")) (@(resolve (symbol "part1"))))
-  ;; (when (resolve (symbol "part2")) (@(resolve (symbol "part2"))))
-  )
+;; (prn *command-line-args*)
 
-(defn main []
-  (let [args *command-line-args*]
-    (cond
-      (= (count args) 1) (run (current-year) (first args))
-      (= (count args) 2) (run (first args) (second args)))))
+(defn get-program-path [args]
+  (case (count args)
+    1 (let [args (conj args (.format date formatter))
+            [year day] (->> args (map #(Integer/parseInt %)))]
+        (format "%d/day%d/day%d.clj" year day day))
+    2 (let [[year day] (->> args (map #(Integer/parseInt %)))]
+        (format "%d/day%d/day%d.clj" year day day))
+    (throw (Exception. "Args must be year and day"))))
 
-(main)
+;; (prn (get-program-path *command-line-args*))
+
+(-> (shell/sh "bb" (get-program-path *command-line-args*))
+    (#(do (print (:out %))
+          (when (not= (:exit %) 0) (print (:err %))))))

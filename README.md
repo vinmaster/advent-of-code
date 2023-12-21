@@ -23,13 +23,13 @@ Fill out config.json using config.json.sample. Optional user-agent can be added 
 
 ```bash
 # Download input (Requires config.json with SESSION_ID in it)
-# bun cli.ts download -y YEAR -d DAY
-bun cli.ts -d 1 download
+# bun cli.ts input -y YEAR -d DAY
+bun cli.ts -d 1 input
 # Copy .ts file from previous day
 bun cli.ts -d 1 copy ts
 # Submit answer PART ANSWER
 bun cli.ts -d 1 submit 1 123
-# Get prompt
+# Download prompt
 bun cli.ts -d 1 prompt
 # List all the solution for the year
 bun cli.ts list
@@ -75,11 +75,11 @@ node main.js 1
 
 ```bash
 # Run one day solutions
-# bun main-bun.ts YEAR DAY
-bun main-bun.ts 2018 1
+# bun main.ts YEAR DAY
+bun main.ts 2018 1
 # Run one day solutions using current year
-# bun main-bun.ts DAY
-bun main-bun.ts 1
+# bun main.ts DAY
+bun main.ts 1
 ```
 
 (Requires Deno)
@@ -97,24 +97,24 @@ deno run --allow-run main-deno.ts 1
 
 (Requires inlein)
 
-```bash
-# Run one day solutions
-# inlein main.clj YEAR DAY
-inlein main.clj 2019 1
-# Run one day solutions for current year
-# inlein main.clj DAY
-inlein main.clj 1
-```
-
 (Requires Babashka)
 
 ```bash
 # Jack-in to repl
 bb nrepl-server
 # Run one day solutions
-bb main-bb.clj 2021 1
+bb main.clj 2021 1
 # Run one day solutions for current year
-bb main-bb.clj 1
+bb main.clj 1
+```
+
+```bash
+# Run one day solutions
+# inlein main-inlein.clj YEAR DAY
+inlein main-inlein.clj 2019 1
+# Run one day solutions for current year
+# inlein main-inlein.clj DAY
+inlein main-inlein.clj 1
 ```
 
 ### C#
