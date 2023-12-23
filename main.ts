@@ -36,15 +36,13 @@ if (!fs.existsSync(path)) {
   process.exit(1);
 }
 
-// console.log(`Running ${year} ${day}`);
-
-console.time('⬅️ Finished in');
-
 let filename = `day${day}.ts`;
 let file = Bun.file(`${path}/${filename}`);
 if (!(await file.exists())) {
   filename = `day${day}.js`;
 }
+
+console.time('⬅️ Finished in');
 
 proc = Bun.spawn(['bun', filename], {
   cwd: path,
