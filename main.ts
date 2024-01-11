@@ -3,8 +3,8 @@ import fs from 'fs';
 let proc;
 process.on('SIGINT', () => {
   console.log('Ctrl-C was pressed');
-  // if (proc) proc.kill(); // not needed
-  // process.exit(); // not needed
+  if (proc) proc.kill(); // TODO check if needed
+  process.exit(); // TODO check if needed
 });
 
 let [, , year, day] = Bun.argv;
