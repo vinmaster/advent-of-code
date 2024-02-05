@@ -50,7 +50,9 @@ node cli.js help
 
 ```bash
 chokidar -p true --polling-interval 1000 "20*/**/*" -c "node main.js 2019 11 | tee output.txt"
-chokidar "20*/**/*" -c "python3 main.py 1 > output.txt 2>&1"
+chokidar "20*/**/*" -c "bun main.ts 1 > output.txt 2>&1"
+bun --watch 2021/day12/day12.ts
+bun --watch test 2021/day12
 ```
 
 ## Running solutions

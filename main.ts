@@ -44,6 +44,12 @@ if (!(await file.exists())) {
 
 console.time('⬅️ Finished in');
 
+let delay = 3000;
+let timeoutId = setTimeout(() => {
+  if (proc) proc.kill(); // TODO check if needed
+  console.log(`Proc ran over ${delay}ms`);
+}, delay);
+
 proc = Bun.spawn(['bun', filename], {
   cwd: path,
   stdin: null,
@@ -52,10 +58,12 @@ proc = Bun.spawn(['bun', filename], {
   onExit(proc, exitCode, signalCode, error) {
     if (exitCode !== 0) {
       console.log('Proc killed:', proc.killed);
-      console.log('Exit code:', exitCode);
-      console.log('Signal code:', signalCode);
-      console.log('Error:', error);
+      // console.log('Exit code:', exitCode);
+      // console.log('Signal code:', signalCode);
+      // console.log('Error:', error);
+    } else {
+      console.timeEnd('⬅️ Finished in');
     }
-    console.timeEnd('⬅️ Finished in');
+    clearTimeout(timeoutId);
   },
 });
