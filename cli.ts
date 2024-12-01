@@ -255,12 +255,12 @@ function parseOptions(args: Record<string, any>): Options {
     day: today.getDate(),
     overwrite: false,
   };
-  // Puzzle day come out at 9pm PST
-  if (today.getHours() >= 21) {
+  // Puzzle day come out at 5am UTC
+  if (today.getUTCHours() >= 5) {
     options.day += 1;
   }
-  // Puzzles comes out in December (month 11)
-  if (today.getMonth() < 11) {
+  // Puzzles comes out in December (month 11). Try to calculate current year
+  if (today.getUTCMonth() !== 11) {
     options.year -= 1;
   }
 
