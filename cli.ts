@@ -101,23 +101,31 @@ function copyFile(year: number, day: number, ext: string, options: Options) {
   const currentPath = `${puzzlePath}/day${day}.${ext}`;
   let previousDay = day - 1;
   let isComplete = false;
-  while (previousDay >= 1) {
-    const file = `day${previousDay}.${ext}`;
-    const previousPath = `./${year}/day${previousDay}/${file}`;
-    if (!options.overwrite && fs.existsSync(currentPath)) {
-      console.log(
-        `File already exists: ${currentPath} (Use to overwrite option (-o) to overwrite)`
-      );
-      isComplete = true;
-      break;
+  const copyFromYear = (year: number) => {
+    while (previousDay >= 1) {
+      const file = `day${previousDay}.${ext}`;
+      const previousPath = `./${year}/day${previousDay}/${file}`;
+      if (!options.overwrite && fs.existsSync(currentPath)) {
+        console.log(
+          `File already exists: ${currentPath} (Use to overwrite option (-o) to overwrite)`
+        );
+        isComplete = true;
+        break;
+      }
+      if (fs.existsSync(previousPath)) {
+        fs.copyFileSync(previousPath, currentPath);
+        console.log(`Copied file ${previousPath} to ${currentPath}`);
+        isComplete = true;
+        break;
+      }
+      previousDay--;
     }
-    if (fs.existsSync(previousPath)) {
-      fs.copyFileSync(previousPath, currentPath);
-      console.log(`Copied file ${previousPath} to ${currentPath}`);
-      isComplete = true;
-      break;
-    }
-    previousDay--;
+  };
+  copyFromYear(year);
+  // Look in previous year
+  if (previousDay === 0) {
+    previousDay = 25;
+    copyFromYear(year - 1);
   }
   if (!isComplete) {
     console.log('No previous file to copy this year');
