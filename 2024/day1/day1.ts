@@ -1,5 +1,3 @@
-// deno-lint-ignore-file prefer-const
-
 export function part1(input: string) {
   input = input.trim();
   let list1: number[] = [];
@@ -40,12 +38,14 @@ export function part2(input: string) {
 
 async function main(useRealInput = true) {
   let input =
-    // @ts-ignore: next-line
+    // @ts-expect-error: next-line
     typeof Bun !== 'undefined'
-      ? // @ts-ignore: next-line
+      ? // @ts-expect-error: next-line
         await Bun.file(`${import.meta.dir}/input.txt`).text()
-      : typeof Deno !== 'undefined'
-      ? await Deno.readTextFile(`${import.meta.dirname}/input.txt`)
+      : // @ts-expect-error: next-line
+      typeof Deno !== 'undefined'
+      ? // @ts-expect-error: next-line
+        await Deno.readTextFile(`${import.meta.dirname}/input.txt`)
       : '';
 
   let testInput = `

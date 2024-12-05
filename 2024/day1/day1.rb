@@ -38,3 +38,20 @@ end
 
 puts "part1: #{part1(input)}"
 puts "part2: #{part2(input)}"
+
+=begin
+
+input = File
+  .readlines('input01.txt')
+  .map { |line| line.scan(/\d+/).map &:to_i }
+
+
+# Part 1
+p input.transpose.map(&:sort).transpose.sum { |a,b| (a - b).abs }
+
+
+# Part 2
+a,b = input.transpose
+p a.sum { |i| i * b.count(i) }
+
+=end

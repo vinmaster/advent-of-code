@@ -46,3 +46,24 @@ if __name__ == "__main__":
 
     print(f"Part 1: {part1(input)}")
     print(f"Part 2: {part2(input)}")
+
+"""
+
+data = [*map(int, open('in.txt').read().split())]
+A, B = sorted(data[0::2]), sorted(data[1::2])
+print(sum(map(lambda a, b: abs(a-b), A, B)),
+      sum(map(lambda a: a * B.count(a), A)))
+
+
+--------------------------------------------------------------------------------
+
+
+l1, l2 = zip(*[map(int, line.split()) for line in open('input')])
+
+# Part 1
+print(sum(abs(x - y) for x, y in zip(sorted(l1), sorted(l2))))
+
+# Part 2
+print(sum(x for x in l2 if x in l1))
+
+"""
