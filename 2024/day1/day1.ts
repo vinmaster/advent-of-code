@@ -37,16 +37,21 @@ export function part2(input: string) {
 }
 
 async function main(useRealInput = true) {
-  let input =
-    // @ts-expect-error: next-line
-    typeof Bun !== 'undefined'
-      ? // @ts-expect-error: next-line
-        await Bun.file(`${import.meta.dir}/input.txt`).text()
-      : // @ts-expect-error: next-line
-      typeof Deno !== 'undefined'
-      ? // @ts-expect-error: next-line
-        await Deno.readTextFile(`${import.meta.dirname}/input.txt`)
-      : '';
+  let input = '';
+  try {
+    input =
+      // @ts-expect-error: next-line
+      typeof Bun !== 'undefined'
+        ? // @ts-expect-error: next-line
+          await Bun.file(`${import.meta.dir}/input.txt`).text()
+        : // @ts-expect-error: next-line
+        typeof Deno !== 'undefined'
+        ? // @ts-expect-error: next-line
+          await Deno.readTextFile(`${import.meta.dirname}/input.txt`)
+        : '';
+  } catch (error) {
+    useRealInput = false;
+  }
 
   let testInput = `
 3   4
@@ -62,5 +67,5 @@ async function main(useRealInput = true) {
   console.log('part2:', part2(input));
 }
 
-// main(false);
-// main();
+// await main(false);
+// await main();

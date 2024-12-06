@@ -1,19 +1,26 @@
 function correctedUpdate(rules, update) {
-  let isCorrect = true;
-  do {
-    isCorrect = true;
-    for (let rule of rules) {
-      let [pageX, pageY] = rule;
-      if (!update.includes(pageX) || !update.includes(pageY)) continue;
-      let indexX = update.indexOf(pageX);
-      let indexY = update.indexOf(pageY);
-      if (indexX > indexY) {
-        isCorrect = false;
-        update.splice(indexX, 1, pageY);
-        update.splice(indexY, 1, pageX);
-      }
-    }
-  } while (isCorrect === false);
+  update.sort((a, b) => {
+    let rule = rules.find(r => r.includes(a) && r.includes(b))!;
+    if ([a, b].toString() === rule.toString()) return -1;
+    else if ([b, a].toString() === rule.toString()) return 1;
+    else return 0;
+  });
+
+  // let isCorrect = true;
+  // do {
+  //   isCorrect = true;
+  //   for (let rule of rules) {
+  //     let [pageX, pageY] = rule;
+  //     if (!update.includes(pageX) || !update.includes(pageY)) continue;
+  //     let indexX = update.indexOf(pageX);
+  //     let indexY = update.indexOf(pageY);
+  //     if (indexX > indexY) {
+  //       isCorrect = false;
+  //       update.splice(indexX, 1, pageY);
+  //       update.splice(indexY, 1, pageX);
+  //     }
+  //   }
+  // } while (isCorrect === false);
 }
 
 export function part1(input: string) {
@@ -65,16 +72,21 @@ export function part2(input: string) {
 }
 
 async function main(useRealInput = true) {
-  let input =
-    // @ts-expect-error: next-line
-    typeof Bun !== 'undefined'
-      ? // @ts-expect-error: next-line
-        await Bun.file(`${import.meta.dir}/input.txt`).text()
-      : // @ts-expect-error: next-line
-      typeof Deno !== 'undefined'
-      ? // @ts-expect-error: next-line
-        await Deno.readTextFile(`${import.meta.dirname}/input.txt`)
-      : '';
+  let input = '';
+  try {
+    input =
+      // @ts-expect-error: next-line
+      typeof Bun !== 'undefined'
+        ? // @ts-expect-error: next-line
+          await Bun.file(`${import.meta.dir}/input.txt`).text()
+        : // @ts-expect-error: next-line
+        typeof Deno !== 'undefined'
+        ? // @ts-expect-error: next-line
+          await Deno.readTextFile(`${import.meta.dirname}/input.txt`)
+        : '';
+  } catch (error) {
+    useRealInput = false;
+  }
 
   let testInput = `
 47|53
@@ -112,5 +124,5 @@ async function main(useRealInput = true) {
   console.log('part2:', part2(input));
 }
 
-// main(false);
-main();
+// await main(false);
+await main();
