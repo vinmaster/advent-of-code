@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2024 day 9</title>
+    <style>
+      :root {
+        --block-width: 20px;
+        --block-height: 30px;
+        --max-items-per-row: 25;
+      }
+      body {
+        margin: 0;
+      }
+      #app {
+        display: grid;
+        place-items: center;
+      }
+      .memory {
+        display: grid;
+        grid-template-columns: repeat(var(--max-items-per-row), var(--block-width));
+        gap: 2px;
+        margin: 2px;
+      }
+      .block {
+        display: grid;
+        place-items: center;
+        color: black;
+        width: var(--block-width);
+        height: var(--block-height);
+        background-color: #00e0ff;
+        border: black 2px solid;
+      }
+      .block.done {
+        color: white;
+        opacity: 0.8;
+        background-image: radial-gradient(#e5e5f7 0.5px, transparent 0.5px),
+          radial-gradient(#e5e5f7 0.5px, #004fb8 0.5px);
+        background-size: 2px 2px;
+        background-position: 0 0, 10px 10px;
+      }
+      .block.selected {
+        border: red 2px solid !important;
+      }
+      .block.free {
+        background-color: white;
+      }
+    </style>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <body>
+    <h1 style="text-align: center">2024 Day 9</h1>
+    <div style="text-align: center; margin-bottom: 1rem">Part 1</div>
+    <div id="app">
+      <div class="memory">
+        <div
+          class="block"
+          v-for="block in blocks"
+          :class="{ done: block.done, selected: block.selected, free: block.free }"
+        >
+          {{ block.id }}
+        </div>
+      </div>
+
+      <div style="display: flex">
+        <form style="margin-top: 1rem" @submit.prevent="parseInput">
+          <label for="input">Input: </label>
+          <input id="input" v-model="inputString" />
+          <button @click="parseInput">Parse Input</button>
+          <button type="button" @click="defrag">Defrag</button>
+        </form>
+      </div>
+    </div>
+  </body>
+  <script>
+    const { createApp, ref } = Vue;
+
+    createApp({
+      setup() {
+        const inputString = ref('2333133121414131402');
+        const blocks = ref([]);
+        let generator = null;
+        let intervalId = null;
+
+        function parseInput() {
+          blocks.value = [];
+          generator = null;
+          clearInterval(intervalId);
+          intervalId = null;
+          for (let i = 0; i < inputString.value.length; i++) {
+            let size = Number(inputString.value[i]);
+            if (i % 2 === 0) {
+              // Block
+              blocks.value = blocks.value.concat(
+                ...Array(size)
+                  .fill()
+                  .map(b => ({ id: i / 2 }))
+              );
+            } else {
+              // Free space
+              blocks.value = blocks.value.concat(
+                ...Array(size)
+                  .fill()
+                  .map(b => ({ id: '.' }))
+              );
+            }
+          }
+        }
+
+        function defrag() {
+          if (intervalId) return;
+
+          intervalId = setInterval(() => {
+            if (generator) {
+              generator.next();
+            } else {
+              generator = defragger();
+              generator.next();
+            }
+          }, 1000);
+        }
+
+        function* defragger() {
+          let firstFreeSpaceIndex = blocks.value.findIndex(b => b.id === '.');
+          for (let i = blocks.value.length - 1; i > 0 && firstFreeSpaceIndex < i; i--) {
+            for (let j = 0; j < firstFreeSpaceIndex; j++) {
+              blocks.value[j].done = true;
+            }
+            let block = blocks.value[i];
+            block.selected = true;
+            blocks.value[firstFreeSpaceIndex].selected = true;
+            yield;
+            block.selected = false;
+            blocks.value[firstFreeSpaceIndex].selected = false;
+
+            if (block.id === '.') {
+              block.free = true;
+            } else {
+              blocks.value.splice(i, 1, { id: '.', free: true });
+              block.done = true;
+              blocks.value.splice(firstFreeSpaceIndex, 1, block);
+              firstFreeSpaceIndex = blocks.value.findIndex(b => b.id === '.');
+            }
+            yield;
+          }
+          blocks.value[firstFreeSpaceIndex - 1].done = true;
+        }
+
+        parseInput();
+
+        return {
+          inputString,
+          blocks,
+          parseInput,
+          defrag,
+        };
+      },
+    }).mount('#app');
+  </script>
+</html>
