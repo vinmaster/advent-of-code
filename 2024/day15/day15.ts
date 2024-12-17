@@ -97,8 +97,6 @@ function moveRobot(grid: Grid, current: Coord, move: Direction) {
 }
 
 function pushBox2(grid: Grid, coord: Coord, dir: Direction): boolean {
-  let originalCoord = [...coord] as Coord;
-  let originalValue = grid.get(coord);
   let current = grid.get(coord);
   let dirType: 'vertical' | 'horizontal' = DIR.indexOf(dir) % 2 === 0 ? 'vertical' : 'horizontal';
   if (dirType === 'horizontal') {
