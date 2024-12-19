@@ -216,13 +216,15 @@ function dijkstra(grid: Grid, start: Coord, end: Coord) {
 
 export function part1(input: Input) {
   let [maxX, maxY] = [71, 71];
+  let maxBytes = 1024;
   if (input.length < 100) {
     // Sample input
     maxX = 7;
     maxY = 7;
+    maxBytes = 12;
   }
   let grid = new Array(maxX).fill(null).map(() => new Array(maxY).fill('.'));
-  for (let byte of input.slice(0, 1024)) {
+  for (let byte of input.slice(0, maxBytes)) {
     let [x, y] = byte;
     grid[x][y] = '#';
   }
