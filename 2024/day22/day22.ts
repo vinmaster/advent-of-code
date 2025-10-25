@@ -21,7 +21,7 @@ function generateNextSecret(secret: number) {
 
 function generateSecrets(secret: number, times: number) {
   let secrets = [secret] as number[];
-  for (let i = 0; i < times - 1; i++) {
+  for (let i = 0; i < times; i++) {
     secret = generateNextSecret(secret);
     secrets.push(secret);
   }
