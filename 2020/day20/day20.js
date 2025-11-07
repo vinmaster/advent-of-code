@@ -1,154 +1,257 @@
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
-// util.inspect.defaultOptions.maxArrayLength = null;
-// util.inspect.defaultOptions.showHidden = true;
-// util.inspect.defaultOptions.depth = null;
-// util.inspect.defaultOptions.compact = true;
+const BORDER_DIRS = ['top', 'bottom', 'left', 'right'];
 
-let BORDER_DIRS = ['top', 'bottom', 'left', 'right'];
+const rotate = a => a[0].map((_, i) => a.map(r => r[i]).reverse());
+const flipH = a => a.map(r => [...r].reverse());
+const flipV = a => [...a].reverse();
 
-/**
- * @template T
- * @param {T[][]} array 
- * @returns {T[][]}
- */
-function rotate(array) {
-  return array[0].map((_, colIndex) => array.map(row => row[colIndex]));
-}
+const grabBorder = (a, dir) => {
+  if (dir === 'top') return a[0].join('');
+  if (dir === 'bottom') return a[a.length - 1].join('');
+  if (dir === 'left') return a.map(r => r[0]).join('');
+  if (dir === 'right') return a.map(r => r[r.length - 1]).join('');
+};
 
-/**
- * @template T
- * @param {T[][]} array 
- * @returns {T[][]}
- */
-function flipVertical(array) {
-  let copy = array.map(a => a.slice());
-  return copy.reverse();
-}
+// Generate all 8 orientations (4 rotations × flip)
+const orientations = tile => {
+  const variants = [];
+  let t = tile;
+  for (let i = 0; i < 4; i++) {
+    variants.push(t);
+    variants.push(flipH(t));
+    t = rotate(t);
+  }
+  return variants;
+};
 
 /**
- * @param {string} entry
- * @returns {{ id: string, tile: string[][]}}
+ * Parse a tile block into { id, tile }
  */
 function parseTile(entry) {
-  let [idStr, ...lines] = entry.split('\n');
-  let [_, id] = idStr.match(/^Tile (\d+):$/);
-
-  let tile = [];
-  for (let y = 0; y < lines.length; y++) {
-    tile.push([]);
-    for (let x = 0; x < lines[y].length; x++) {
-      tile[y].push(lines[y][x]);
-    }
-  }
+  const [idStr, ...lines] = entry.trim().split('\n');
+  const id = idStr.match(/^Tile (\d+):$/)[1];
+  const tile = lines.map(line => line.split(''));
   return { id, tile };
 }
 
 /**
- * @param {string[][]} array
- * @param {'top' | 'bottom' | 'left' | 'right'} border
- * @returns {string}
- */
-function grabBorder(array, border) {
-  if (border === 'top') {
-    return array[0].join('');
-  } else if (border === 'bottom') {
-    return array[array.length - 1].join('');
-  } else if (border === 'left') {
-    return array.reduce((str, a) => str + a[0], '');
-  } else if (border === 'right') {
-    return array.reduce((str, a) => str + a[a.length - 1], '');
-  }
-}
-
-/**
- * @template T
- * @param {T[]} arr1 
- * @param {T[]} arr2 
- */
-function intersection(arr1, arr2) {
-  return arr1.filter(x => arr2.includes(x));
-}
-
-/**
- * @param {string} id 
- * @param {string[][]} tilesMap 
- * @returns {string[]}
+ * Find tiles that share borders with targetId
  */
 function matchingBorderIds(targetId, tilesMap) {
-  let ids = [];
-  let targetBorders = BORDER_DIRS
-    .map(b => grabBorder(tilesMap[targetId], b));
-  let reverseTargetBorders = [...targetBorders].reverse();
-  targetBorders = targetBorders.concat(reverseTargetBorders);
-  for (let id of Object.keys(tilesMap)) {
-    if (id !== targetId) {
-      let borders = BORDER_DIRS
-        .map(b => grabBorder(tilesMap[id], b));
-      let reverseBorders = [...borders].reverse();
-      borders = borders.concat(reverseBorders);
-      let matching = intersection(targetBorders, borders);
-      if (matching.length >= 2) {
-        ids.push(id);
-      }
-    }
+  const ids = [];
+  const targetTile = tilesMap[targetId];
+
+  const targetBorders = BORDER_DIRS.flatMap(b => {
+    const border = grabBorder(targetTile, b);
+    return [border, border.split('').reverse().join('')];
+  });
+
+  for (const [id, tile] of Object.entries(tilesMap)) {
+    if (id === targetId) continue;
+
+    const borders = BORDER_DIRS.flatMap(b => {
+      const border = grabBorder(tile, b);
+      return [border, border.split('').reverse().join('')];
+    });
+
+    const match = borders.some(b => targetBorders.includes(b));
+    if (match) ids.push(id);
   }
+
   return ids;
 }
 
-/** @param {string[][]} tile */
-function printTile(tile) {
-  return tile.map(a => a.join('')).join('\n')
+function parseTile(entry) {
+  const [idLine, ...lines] = entry.trim().split('\n');
+  const id = idLine.match(/^Tile (\d+):$/)[1];
+  return { id: Number(id), tile: lines.map(l => l.split('')) };
 }
 
-function part1(input) {
-  /** @type {[string string]} */
-  let tileEntries = input
-    .trim()
-    .split('\n\n');
+function getBorders(tile) {
+  return BORDER_DIRS.map(d => grabBorder(tile, d));
+}
 
-  let tilesMap = {};
+function findMatches(tiles) {
+  const matches = new Map();
+  for (const [id, tile] of tiles) {
+    const borders = getBorders(tile);
+    const variants = borders.concat(borders.map(b => [...b].reverse().join('')));
+    const matched = [];
+    for (const [oid, otile] of tiles) {
+      if (id === oid) continue;
+      const oborders = getBorders(otile);
+      const ovar = oborders.concat(oborders.map(b => [...b].reverse().join('')));
+      if (variants.some(b => ovar.includes(b))) matched.push(oid);
+    }
+    matches.set(id, matched);
+  }
+  return matches;
+}
 
-  // Parse tiles into 2d array
-  tileEntries.reduce((map, entry) => {
-    let { id, tile } = parseTile(entry);
-    map[id] = tile;
-    return map;
-  }, tilesMap);
+function assemble(tiles, matches) {
+  const size = Math.sqrt(tiles.size);
+  const placed = new Map(); // [y,x] -> {id,tile}
+  const used = new Set();
 
-  // let targetBorders = BORDER_DIRS
-  //   .map(b => grabBorder(tilesMap['2311'], b));
-  // let reverseTargetBorders = [...targetBorders].reverse();
-  // targetBorders = targetBorders.concat(reverseTargetBorders);
-  // let targetBorders2 = BORDER_DIRS
-  //   .map(b => grabBorder(tilesMap['1951'], b));
-  // let reverseTargetBorders2 = [...targetBorders2].reverse();
-  // targetBorders2 = targetBorders2.concat(reverseTargetBorders2);
-  // console.log(targetBorders);
-  // console.log(targetBorders2);
-  // console.log(intersection(targetBorders, targetBorders2));
+  // pick a corner
+  const cornerId = [...matches.entries()].find(([_, v]) => v.length === 2)[0];
+  const cornerTile = tiles.get(cornerId);
+  used.add(cornerId);
 
-  for (let id of Object.keys(tilesMap)) {
-    let ids = matchingBorderIds(id, tilesMap);
-    if (ids.length !== 0) {
-      console.log(id, ids);
+  // find orientation with unmatched borders on top/left
+  let orientedCorner;
+  for (const variant of orientations(cornerTile)) {
+    const top = grabBorder(variant, 'top');
+    const left = grabBorder(variant, 'left');
+    const topMatches = [...tiles.entries()].some(([oid, ot]) => {
+      if (oid === cornerId) return false;
+      const b = getBorders(ot);
+      const br = b.map(x => [...x].reverse().join(''));
+      return b.concat(br).includes(top);
+    });
+    const leftMatches = [...tiles.entries()].some(([oid, ot]) => {
+      if (oid === cornerId) return false;
+      const b = getBorders(ot);
+      const br = b.map(x => [...x].reverse().join(''));
+      return b.concat(br).includes(left);
+    });
+    if (!topMatches && !leftMatches) {
+      orientedCorner = variant;
+      break;
     }
   }
 
-  // console.log(printTile(tilesMap['1009']));
-  // console.log(grabBorder(tilesMap['1009'], 'right'));
+  placed.set('0,0', { id: cornerId, tile: orientedCorner });
 
-  // console.log(parseTile(entry));
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      if (x === 0 && y === 0) continue;
+
+      let targetBorder, dir, matchDir;
+
+      if (x > 0) {
+        const leftTile = placed.get(`${y},${x - 1}`);
+        targetBorder = grabBorder(leftTile.tile, 'right');
+        dir = 'left';
+        matchDir = 'right';
+      } else {
+        const topTile = placed.get(`${y - 1},${x}`);
+        targetBorder = grabBorder(topTile.tile, 'bottom');
+        dir = 'top';
+        matchDir = 'bottom';
+      }
+
+      for (const [oid, otile] of tiles) {
+        if (used.has(oid)) continue;
+
+        for (const variant of orientations(otile)) {
+          const border = grabBorder(variant, dir);
+          if (border === targetBorder) {
+            placed.set(`${y},${x}`, { id: oid, tile: variant });
+            used.add(oid);
+            y = y; // for clarity
+            x = x;
+            break;
+          }
+        }
+        if (used.has(oid)) break;
+      }
+    }
+  }
+
+  return { placed, size };
+}
+
+function combineImage(placed, size) {
+  const tileSize = placed.get('0,0').tile.length - 2;
+  const image = [];
+
+  for (let y = 0; y < size; y++) {
+    for (let row = 1; row <= tileSize; row++) {
+      let line = '';
+      for (let x = 0; x < size; x++) {
+        const tile = placed.get(`${y},${x}`).tile;
+        line += tile[row].slice(1, -1).join('');
+      }
+      image.push(line.split(''));
+    }
+  }
+
+  return image;
+}
+
+const monsterPattern = ['                  # ', '#    ##    ##    ###', ' #  #  #  #  #  #   '];
+const monsterCoords = [];
+for (let y = 0; y < monsterPattern.length; y++) {
+  for (let x = 0; x < monsterPattern[y].length; x++) {
+    if (monsterPattern[y][x] === '#') monsterCoords.push([x, y]);
+  }
+}
+
+function countMonsters(image) {
+  const variants = orientations(image);
+  for (const variant of variants) {
+    let count = 0;
+    const imgH = variant.length;
+    const imgW = variant[0].length;
+    const marked = variant.map(r => [...r]);
+
+    for (let y = 0; y < imgH - 3; y++) {
+      for (let x = 0; x < imgW - 20; x++) {
+        if (monsterCoords.every(([dx, dy]) => variant[y + dy][x + dx] === '#')) {
+          count++;
+          monsterCoords.forEach(([dx, dy]) => (marked[y + dy][x + dx] = 'O'));
+        }
+      }
+    }
+
+    if (count > 0) {
+      const roughness = marked.flat().filter(c => c === '#').length;
+      return { count, roughness };
+    }
+  }
+  return { count: 0, roughness: 0 };
+}
+
+function part1(input) {
+  const tiles = input.trim().split('\n\n').map(parseTile);
+  const tilesMap = Object.fromEntries(tiles.map(t => [t.id, t.tile]));
+  const neighbors = {};
+  for (const id of Object.keys(tilesMap)) {
+    neighbors[id] = matchingBorderIds(id, tilesMap);
+  }
+  const corners = Object.entries(neighbors)
+    .filter(([_, ids]) => ids.length === 2)
+    .map(([id]) => Number(id));
+  const product = corners.reduce((a, b) => a * b, 1);
+  return product;
 }
 
 function part2(input) {
+  const tiles = new Map(
+    input
+      .trim()
+      .split('\n\n')
+      .map(t => {
+        const parsed = parseTile(t);
+        return [parsed.id, parsed.tile];
+      })
+  );
+  const matches = findMatches(tiles);
+  const { placed, size } = assemble(tiles, matches);
+  const image = combineImage(placed, size);
+  const { count, roughness } = countMonsters(image);
+  return roughness;
 }
 
-let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8');
+// Use import.meta.dir in Bun instead of __dirname
+const inputPath = resolve(import.meta.dir, 'input.txt');
+const input = readFileSync(inputPath, 'utf8');
 
-input = `
+// Example test input
+const exampleInput = `
 Tile 2311:
 ..##.#..#.
 ##..#.....
@@ -256,7 +359,7 @@ Tile 3079:
 ..#.###...
 ..#.......
 ..#.###...
-`
+`;
 
-console.log('day20 part1:', part1(input));
-console.log('day20 part2:', part2(input));
+console.log('part1:', part1(input));
+console.log('part2:', part2(input));
