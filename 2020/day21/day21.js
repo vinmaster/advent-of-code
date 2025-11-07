@@ -1,85 +1,86 @@
 const fs = require('fs');
 const path = require('path');
 
-// util.inspect.defaultOptions.maxArrayLength = null;
-// util.inspect.defaultOptions.showHidden = true;
-// util.inspect.defaultOptions.depth = null;
-// util.inspect.defaultOptions.compact = true;
+function parseInput(input) {
+  return input
+    .trim()
+    .split('\n')
+    .map(line => {
+      const [ingredientsPart, allergensPart] = line.split(' (contains ');
+      const ingredients = ingredientsPart.split(' ');
+      const allergens = allergensPart ? allergensPart.slice(0, -1).split(', ') : [];
+      return { ingredients, allergens };
+    });
+}
 
 function part1(input) {
-  /** @type {string[]} */
-  let lines = input
-    .trim()
-    .split('\n');
-
-  let foods = [];
-  let possibleAllergens = {};
-  for (let line of lines) {
-    let [ing, alg] = line.split(' (contains ');
-    alg = alg.slice(0, -1);
-    foods.push({
-      ingredients: ing.split(' '),
-      allergens: alg.split(', '),
-    })
-  }
-  console.log(foods);
-
-  // Combine without duplicates
-  let combine = (arr1, arr2) => [...new Set(arr1.concat(arr2))];
-  for (let food of foods) {
-    let { ingredients, allergens } = food;
-    for (let ing of ingredients) {
-      if (!possibleAllergens[ing]) possibleAllergens[ing] = [];
-
-      possibleAllergens[ing] = combine(possibleAllergens[ing], allergens);
-    }
-  }
-
-  console.log(possibleAllergens);
-  for (let [ing, alg] of Object.entries(possibleAllergens)) {
-    if (alg.length === 1) {
-      let target = alg[0];
-      for (let [ing2, alg2] of Object.entries(possibleAllergens)) {
-        if (ing !== ing2) {
-          alg2.splice(alg2.indexOf(alg[0]), 1);
-        }
-      }
-      break;
-    }
-  }
-  console.log(possibleAllergens);
-
-  let targetIngredients = [];
-  for (let [ing, alg] of Object.entries(possibleAllergens)) {
-    if (alg.length === 0) {
-      targetIngredients.push(ing);
-    }
-  }
-
-  console.log(targetIngredients);
-
-  let count = 0;
-  for (let { ingredients, allergens } of foods) {
-    for (let i of ingredients) {
-      if (targetIngredients.includes(i)) {
-        count += 1;
+  const foods = parseInput(input);
+  const allergenMap = new Map();
+  for (const { ingredients, allergens } of foods) {
+    for (const allergen of allergens) {
+      if (!allergenMap.has(allergen)) {
+        allergenMap.set(allergen, new Set(ingredients));
+      } else {
+        const current = allergenMap.get(allergen);
+        allergenMap.set(allergen, new Set([...current].filter(i => ingredients.includes(i))));
       }
     }
   }
-  return count;
+  const possiblyDangerous = new Set([...allergenMap.values()].flatMap(s => [...s]));
+  let safeCount = 0;
+  for (const { ingredients } of foods) {
+    for (const i of ingredients) {
+      if (!possiblyDangerous.has(i)) safeCount++;
+    }
+  }
+  return safeCount.toString();
 }
 
 function part2(input) {
+  const foods = parseInput(input);
+  const allergenMap = new Map();
+
+  for (const { ingredients, allergens } of foods) {
+    for (const allergen of allergens) {
+      if (!allergenMap.has(allergen)) {
+        allergenMap.set(allergen, new Set(ingredients));
+      } else {
+        const current = allergenMap.get(allergen);
+        allergenMap.set(allergen, new Set([...current].filter(i => ingredients.includes(i))));
+      }
+    }
+  }
+
+  const resolved = {};
+  const unresolved = new Map([...allergenMap.entries()].map(([a, s]) => [a, new Set(s)]));
+  while (unresolved.size > 0) {
+    for (const [allergen, ingredients] of unresolved.entries()) {
+      if (ingredients.size === 1) {
+        const ingredient = [...ingredients][0];
+        resolved[allergen] = ingredient;
+        unresolved.delete(allergen);
+        for (const other of unresolved.values()) {
+          other.delete(ingredient);
+        }
+      }
+    }
+  }
+  const canonical = Object.entries(resolved)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([_, ingredient]) => ingredient)
+    .join(',');
+  return canonical;
 }
 
 let input = fs.readFileSync(path.resolve(__dirname, './input.txt'), 'utf8');
 
-input = `
-mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
-trh fvjkl sbzzf mxmxvkd (contains dairy)
-sqjhc fvjkl (contains soy)
-sqjhc mxmxvkd sbzzf (contains fish)
-`
+// Test example input
+// input = `
+// mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
+// trh fvjkl sbzzf mxmxvkd (contains dairy)
+// sqjhc fvjkl (contains soy)
+// sqjhc mxmxvkd sbzzf (contains fish)
+// `;
 
-console.log('day21 part1:', part1(input));
-console.log('day21 part2:', part2(input));
+console.log('part1:', part1(input));
+console.log('part2:', part2(input));
