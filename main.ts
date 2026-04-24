@@ -8,17 +8,24 @@ process.on('SIGINT', () => {
 });
 
 let [, , year, day] = Bun.argv;
-let date = new Date();
-if (!day) {
+const today = new Date();
+if (day === undefined) {
   day = year;
-  year = date.getFullYear().toString();
+  year = today.getFullYear();
+} else {
+  year = year ?? today.getFullYear();
+  day = day ?? today.getDate();
 }
 
-if (!day) {
-  day = date.getDate();
-  // Comes out on
-  if (date.getUTCHours() - 5 >= 0) {
-    day += 1;
+// Puzzles come out in December (month 11).
+if (today.getUTCMonth() !== 11) {
+  // If not December, default to last year's puzzles
+  year -= 1;
+} else {
+  // If it is December, check time
+  // Puzzle day come out at 5am UTC (midnight EST)
+  if (today.getUTCHours() < 5) {
+    day -= 1; // It's still the previous puzzle day
   }
 }
 
@@ -44,7 +51,7 @@ if (!(await file.exists())) {
 
 console.time('⬅️ Finished in');
 
-let delay = 3000;
+let delay = 10000;
 let timeoutId = setTimeout(() => {
   if (proc) proc.kill(); // TODO check if needed
   console.log(`Proc ran over ${delay}ms`);

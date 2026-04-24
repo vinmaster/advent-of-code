@@ -52,6 +52,7 @@ node cli.js help
 chokidar -p true --polling-interval 1000 "20*/**/*" -c "node main.js 2019 11 | tee output.txt"
 chokidar "20*/**/*" -c "bun main.ts 1 > output.txt 2>&1"
 watchexec -w 2024 -r -- python ./2024/day1/day1.py
+watchexec -w 2025 -r -- bun main.ts 1
 bun --watch 2021/day12/day12.ts
 bun --watch test 2021/day12
 ```
